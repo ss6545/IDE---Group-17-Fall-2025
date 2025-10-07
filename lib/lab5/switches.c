@@ -114,7 +114,7 @@ void S1_init_interrupt(void) {
 	//clear interrupt at the correct pin	
 	GPIOA->CPU_INT.ICLR |= GPIO_CPU_INT_ICLR_DIO18_CLR;
 	//enable the intterupt for the correct pin
-	GPIOA->CPU_INT.IMASK |= GPIO_CPU_INT_IMASK_DIO18_SET;
+	GPIOA->CPU_INT.ISET |= GPIO_CPU_INT_IMASK_DIO18_SET;
 	//set polarity for interrupt (prelab) -> switch 1 triggers interrupt on rising edge
 	GPIOA->POLARITY31_16 |= GPIO_POLARITY31_16_DIO18_RISE;
 	//register interrupt w the NVIC - use NVIC_EnableIRQ([IRQn]) func and IRQn is an enumin mspm0g350x.h
@@ -137,7 +137,7 @@ void S2_init_interrupt(void) {
 	//clear interrupt at the correct pin	
 	GPIOB->CPU_INT.ICLR |= GPIO_CPU_INT_ICLR_DIO21_CLR;
 	//enable the intterupt for the correct pin
-	GPIOA->CPU_INT.IMASK |= GPIO_CPU_INT_IMASK_DIO21_SET;
+	GPIOA->CPU_INT.ISET |= GPIO_CPU_INT_IMASK_DIO21_SET;
 	//set polarity for interrupt (prelab) -> switch 1 triggers interrupt on rising edge
 	GPIOA->POLARITY31_16 |= GPIO_POLARITY31_16_DIO21_FALL;
 	//register interrupt w the NVIC - use NVIC_EnableIRQ([IRQn]) func and IRQn is an enumin mspm0g350x.h
