@@ -13,6 +13,7 @@
 
 #include "uart_extras.h"
 #include "uart.h"
+#include <stdint.h>
 
 /**
  * @brief Prints integer value over UART0
@@ -64,4 +65,32 @@ void UART0_printFloat(double num) {
         UART0_putchar((char) ('0' + (int) fractionalPart));
         fractionalPart -= (int) fractionalPart;
     }
+}
+
+/**
+ * @brief Prints hex value over UART0
+ * @param[in] num - Value to print
+ */	
+void UART0_printHex(int num) {
+		char String[9]; // 8 hex digits + null terminator
+    char *StringPtr = &String[8]; // Point to the end of the buffer
+    *StringPtr = '\0'; // Null terminator for the string
+
+    // Handle zero case directly
+    if (num == 0) {
+        *(--StringPtr) = '0';
+    } else {
+        // Convert number to hex string
+        while (num > 0) {
+            uint8_t digit = num & 0xF; // Get lowest 4 bits
+            if (digit < 10) {
+                *(--StringPtr) = '0' + digit;
+            } else {
+                *(--StringPtr) = 'A' + (digit - 10);
+            }
+            num >>= 4; // Shift right by 4 bits
+        }
+    }
+    UART0_put(StringPtr);
+
 }
