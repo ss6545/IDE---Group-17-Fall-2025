@@ -33,6 +33,7 @@ void TIMG0_init(uint32_t period, uint32_t prescaler) {
 		TIMG0->GPRCM.PWREN |= GPTIMER_PWREN_KEY_UNLOCK_W | GPTIMER_PWREN_ENABLE_ENABLE;
 	}//->we have enabled power
 	
+	// ALSO CLEAR THE COUNTER CONTROL REG
 	//->TIMERCLOCK (TIMCLK) Configuration
 	//DOUBLE CHECKKKKKKKKKKKKKKKKKKKKKKK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
@@ -41,26 +42,15 @@ void TIMG0_init(uint32_t period, uint32_t prescaler) {
 	TIMG0->CLKDIV |= GPTIMER_CLKDIV_RATIO_DIV_BY_1;
 	//In TIMx instances with prescalers, optionally set a prescaler using CPS.PCNT
 	TIMG0->COMMONREGS.CPS |= prescaler;//	or should i use GPTIMER_CPSV_CPSVAL_MAXIMUM?
-	//Enable the TIMCLK by setting CCLKCTL.CLKEN = 1
-	TIMG0->COMMONREGS.CCLKCTL |= 0x01;
-	
-	//->Counting Mode Control
-	
-	//->DOWNCOUNT
-	//LOAD=0
-	TIMG0->COUNTERREGS.LOAD |= 0;
-	//WHEN THE 2 CONDITIONS R MET, LOAD VAL IS LOADED INTO CTR
-	while ( (TIMG0->COUNTERREGS.CTR == 0) && (TIMG0->COUNTERREGS.RC == 1) ) {
-		//LOAD VAL INTO CTR
-		TIMG0->COUNTERREGS.CTR |= TIMG0->COUNTERREGS.LOAD;
-	}
-	//->PERIODIC
-	TIMG0->COUNTERREGS.RC |= GPTIMER_CTRCTL_EN_MASK;
 	//counter value after enable
 	TIMG0->COUNTERREGS.CTR |= period;
+	//Enable the TIMCLK by setting CCLKCTL.CLKEN = 1
+	TIMG0->COMMONREGS.CCLKCTL |= GPTIMER_CCLKCTL_CLKEN_ENABLE;
+
 	
 	__disable_irq();
 	TIMG0->CPU_INT.ICLR |= GPTIMER_GEN_EVENT1_RIS_Z_CLR | GPTIMER_GEN_EVENT1_RIS_Z_SET;
+	//ENABLE THE SAME WAY AS TIMER IS ENABLED
 	TIMG0->CPU_INT.ISET |= GPTIMER_CTRCTL_EN_ENABLED;
 	NVIC_EnableIRQ(TIMG0_INT_VECn);
 	__enable_irq();
@@ -88,7 +78,7 @@ void TIMG6_init(uint32_t period, uint32_t prescaler) {
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
 	TIMG6->CLKSEL |= GPTIMER_CLKSEL_BUSCLK_SEL_ENABLE;
 	//Optionally divide the TIMCLK using CLKDIV.RATIO
-	TIMG6->CLKDIV |= GPTIMER_CLKDIV_RATIO_DIV_BY_1;
+	TIMG6->CLKDIV |= GPTIMER_CLKDIV_RATIO_DIV_BY_8;
 	//In TIMx instances with prescalers, optionally set a prescaler using CPS.PCNT
 	TIMG6->COMMONREGS.CPS |= prescaler;//	or should i use GPTIMER_CPSV_CPSVAL_MAXIMUM?
 	//Enable the TIMCLK by setting CCLKCTL.CLKEN = 1
@@ -166,6 +156,7 @@ void TIMG12_init(uint32_t period) {
 	NVIC_EnableIRQ(TIMG12_INT_VECn);
 	__enable_irq();
 	
+
 
 
 }
