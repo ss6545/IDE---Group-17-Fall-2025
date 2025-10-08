@@ -41,18 +41,28 @@ void TIMG0_init(uint32_t period, uint32_t prescaler) {
 	//Optionally divide the TIMCLK using CLKDIV.RATIO
 	TIMG0->CLKDIV |= GPTIMER_CLKDIV_RATIO_DIV_BY_1;
 	//In TIMx instances with prescalers, optionally set a prescaler using CPS.PCNT
-	TIMG0->COMMONREGS.CPS |= prescaler;//	or should i use GPTIMER_CPSV_CPSVAL_MAXIMUM?
-	//counter value after enable
-	TIMG0->COUNTERREGS.CTR |= period;
+	TIMG0->COMMONREGS.CPS = prescaler;
+	//disable counter
+	TIMG0->COUNTERREGS.CTRCTL = GPTIMER_CTRCTL_EN_DISABLED;
+	//->counter value after enable
+	//set load to period val
+	TIMG0->COUNTERREGS.LOAD = period;
+	//set to load val which is the period, downcount, and repeat after event
+	TIMG0->COUNTERREGS.CTRCTL = GPTIMER_CTRCTL_CVAE_LDVAL | GPTIMER_CTRCTL_CM_DOWN | GPTIMER_CTRCTL_REPEAT_REPEAT_1;
 	//Enable the TIMCLK by setting CCLKCTL.CLKEN = 1
-	TIMG0->COMMONREGS.CCLKCTL |= GPTIMER_CCLKCTL_CLKEN_ENABLE;
+	TIMG0->COMMONREGS.CCLKCTL |= GPTIMER_CCLKCTL_CLKEN_ENABLED;
 
-	
+	//disable interrupts 
 	__disable_irq();
-	TIMG0->CPU_INT.ICLR |= GPTIMER_GEN_EVENT1_RIS_Z_CLR | GPTIMER_GEN_EVENT1_RIS_Z_SET;
-	//ENABLE THE SAME WAY AS TIMER IS ENABLED
-	TIMG0->CPU_INT.ISET |= GPTIMER_CTRCTL_EN_ENABLED;
+	//clear zero event 
+	TIMG0->CPU_INT.ICLR = GPTIMER_CPU_INT_ICLR_Z_MASK;
+	//enable zero event
+	TIMG0->CPU_INT.IMASK |= GPTIMER_CPU_INT_IMASK_Z_MASK;
+	//stert (enable) the timer?
+	
+	//register the interrupt w NVIC
 	NVIC_EnableIRQ(TIMG0_INT_VECn);
+	//enable interrupts
 	__enable_irq();
 	
 }
@@ -76,33 +86,32 @@ void TIMG6_init(uint32_t period, uint32_t prescaler) {
 	//->TIMERCLOCK (TIMCLK) Configuration
 	//DOUBLE CHECKKKKKKKKKKKKKKKKKKKKKKK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
-	TIMG6->CLKSEL |= GPTIMER_CLKSEL_BUSCLK_SEL_ENABLE;
+	TIMG6->CLKSEL |= GPTIMER_CLKSEL_MFCLK_SEL_ENABLE;
 	//Optionally divide the TIMCLK using CLKDIV.RATIO
 	TIMG6->CLKDIV |= GPTIMER_CLKDIV_RATIO_DIV_BY_8;
 	//In TIMx instances with prescalers, optionally set a prescaler using CPS.PCNT
-	TIMG6->COMMONREGS.CPS |= prescaler;//	or should i use GPTIMER_CPSV_CPSVAL_MAXIMUM?
+	TIMG6->COMMONREGS.CPS = prescaler;
+	//disable counter
+	TIMG6->COUNTERREGS.CTRCTL = GPTIMER_CTRCTL_EN_DISABLED;
+	//->counter value after enable
+	//set load to period val
+	TIMG6->COUNTERREGS.LOAD = period;
+	//set to load val which is the period, downcount, and repeat after event
+	TIMG6->COUNTERREGS.CTRCTL = GPTIMER_CTRCTL_CVAE_LDVAL | GPTIMER_CTRCTL_CM_DOWN | GPTIMER_CTRCTL_REPEAT_REPEAT_1;
 	//Enable the TIMCLK by setting CCLKCTL.CLKEN = 1
-	TIMG6->COMMONREGS.CCLKCTL |= 0x01;
+	TIMG6->COMMONREGS.CCLKCTL |= GPTIMER_CCLKCTL_CLKEN_ENABLED;
 	
-	//->Counting Mode Control
-	
-	//->DOWNCOUNT
-	//LOAD=0
-	TIMG6->COUNTERREGS.LOAD |= 0;
-	//WHEN THE 2 CONDITIONS R MET, LOAD VAL IS LOADED INTO CTR
-	while ( (TIMG6->COUNTERREGS.CTR == 0) && (TIMG6->COUNTERREGS.RC == 1) ) {
-		//LOAD VAL INTO CTR
-		TIMG6->COUNTERREGS.CTR |= TIMG6->COUNTERREGS.LOAD;
-	}
-	//->PERIODIC
-	TIMG6->COUNTERREGS.RC |= GPTIMER_CTRCTL_EN_MASK;
-	//counter value after enable
-	TIMG6->COUNTERREGS.CTR |= period;
-	
+	//disable interrupts 
 	__disable_irq();
-	TIMG6->CPU_INT.ICLR |= GPTIMER_GEN_EVENT1_RIS_Z_CLR | GPTIMER_GEN_EVENT1_RIS_Z_SET;
-	TIMG6->CPU_INT.ISET |= GPTIMER_CTRCTL_EN_ENABLED;
+	//clear zero event 
+	TIMG6->CPU_INT.ICLR = GPTIMER_CPU_INT_ICLR_Z_MASK;
+	//enable zero event
+	TIMG6->CPU_INT.IMASK |= GPTIMER_CPU_INT_IMASK_Z_MASK;
+	//stert (enable) the timer?
+	
+	//register the interrupt w NVIC
 	NVIC_EnableIRQ(TIMG6_INT_VECn);
+	//enable interrupts
 	__enable_irq();
 	
 }
@@ -129,31 +138,34 @@ void TIMG12_init(uint32_t period) {
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
 	TIMG12->CLKSEL |= GPTIMER_CLKSEL_MFCLK_SEL_ENABLE;
 	//Optionally divide the TIMCLK using CLKDIV.RATIO
-	TIMG12->CLKDIV |= GPTIMER_CLKDIV_RATIO_DIV_BY_1;
+	TIMG12->CLKDIV |= GPTIMER_CLKDIV_RATIO_DIV_BY_8;
+	
+	//?????NANI?????????
 	//In TIMx instances with prescalers, optionally set a prescaler using CPS.PCNT
-	TIMG12->COMMONREGS.CPS |= 0x01;//	or should i use GPTIMER_CPSV_CPSVAL_MAXIMUM?
+	TIMG12->COMMONREGS.CPS = prescaler;
+	
+	
+	//disable counter
+	TIMG12->COUNTERREGS.CTRCTL = GPTIMER_CTRCTL_EN_DISABLED;
+	//->counter value after enable
+	//set load to period val
+	TIMG12->COUNTERREGS.LOAD = period;
+	//set to load val which is the period, downcount, and repeat after event
+	TIMG12->COUNTERREGS.CTRCTL = GPTIMER_CTRCTL_CVAE_LDVAL | GPTIMER_CTRCTL_CM_DOWN | GPTIMER_CTRCTL_REPEAT_REPEAT_1;
 	//Enable the TIMCLK by setting CCLKCTL.CLKEN = 1
-	TIMG12->COMMONREGS.CCLKCTL |= 0x01;
+	TIMG12->COMMONREGS.CCLKCTL |= GPTIMER_CCLKCTL_CLKEN_ENABLED;
 	
-	//->Counting Mode Control
-	
-	//->DOWNCOUNT
-	//LOAD=0
-	TIMG12->COUNTERREGS.LOAD |= 0;
-	//WHEN THE 2 CONDITIONS R MET, LOAD VAL IS LOADED INTO CTR
-	while ( (TIMG12->COUNTERREGS.CTR == 0) && (TIMG12->COUNTERREGS.RC == 1) ) {
-		//LOAD VAL INTO CTR
-		TIMG12->COUNTERREGS.CTR |= TIMG12->COUNTERREGS.LOAD;
-	}
-	//->PERIODIC
-	TIMG12->COUNTERREGS.RC |= GPTIMER_CTRCTL_EN_MASK;
-	//counter value after enable
-	TIMG12->COUNTERREGS.CTR |= period;
-	
+	//disable interrupts 
 	__disable_irq();
-	TIMG6->CPU_INT.ICLR |= GPTIMER_GEN_EVENT1_RIS_Z_CLR | GPTIMER_GEN_EVENT1_RIS_Z_SET;
-	TIMG6->CPU_INT.ISET |= GPTIMER_CTRCTL_EN_ENABLED;
+	//clear zero event 
+	TIMG12->CPU_INT.ICLR = GPTIMER_CPU_INT_ICLR_Z_MASK;
+	//enable zero event
+	TIMG12->CPU_INT.IMASK |= GPTIMER_CPU_INT_IMASK_Z_MASK;
+	//stert (enable) the timer?
+	
+	//register the interrupt w NVIC
 	NVIC_EnableIRQ(TIMG12_INT_VECn);
+	//enable interrupts
 	__enable_irq();
 	
 

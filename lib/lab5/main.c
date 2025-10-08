@@ -32,14 +32,14 @@ int main() {
 	S2_init_interrupt();
 	UART0_init();
 	//TIMG6 w 0.5Hz freq
-	TIMG6_init(2,1);
+	TIMG6_init(39999,199);
 	//TIMG12 w 1kHz freq
-	TIMG12_init(0.001);
+	TIMG12_init(19);
 	
 	//int numS2presses = 0;
 	
 	
-	while (1) {}
+	while (1) {}//all other functionality will b done in the interrupts
 		
 			
 

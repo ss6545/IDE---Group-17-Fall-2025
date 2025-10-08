@@ -146,4 +146,3 @@ void S2_init_interrupt(void) {
 	__enable_irq();
 }
 
-

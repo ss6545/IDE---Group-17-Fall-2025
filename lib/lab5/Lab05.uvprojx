@@ -448,6 +448,11 @@
               <FileType>5</FileType>
               <FilePath>..\..\lib\lab5\uart.h</FilePath>
             </File>
+            <File>
+              <FileName>ISR.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ISR.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
