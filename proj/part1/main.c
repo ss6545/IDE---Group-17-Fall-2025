@@ -8,6 +8,8 @@ IDE Lab05 -
 #include <ti/devices/msp/msp.h>
 #include "lab5/leds.h"
 #include "lab5/switches.h"
+#include "lab5/uart.h"
+#include "lab5/timers.h"
 
 
 /*
@@ -25,77 +27,22 @@ void keepLEDon(void) {
 int main() {
 	//->set up LED1 and S1
 	LED1_init();
-	S1_init();
+	S1_init_interrupt();
 	LED2_init();
-	S2_init();
+	S2_init_interrupt();
+	UART0_init();
+	//TIMG6 w 0.5Hz freq
+	TIMG6_init(39999,199);
+	//TIMG12 w 1kHz freq
+	TIMG12_init(19);
+	
+	//int numS2presses = 0;
 	
 	
-	int numS2presses = 0;
-	
-	
-	while (1) {
+	while (1) {}//all other functionality will b done in the interrupts
 		
-		if (S1_pressed()) {
-			TIMG6_init();
 			
-			
-			
-			
-			
-			
-			
-			
-			numS2presses += 1;
-			if (numS2presses == 4) numS2presses = 1;//if past 3rd press -> set back to 1st color cycle
-			
-			switch (numS2presses) {
-				case 1:
-					LED2_set(1);//red
-					keepLEDon();
-					LED2_set(0);//all off
-					LED2_set(2);//green
-					keepLEDon();
-					LED2_set(0);//all off
-					LED2_set(3);//blue
-					keepLEDon();
-					LED2_set(0);//all off
-					break;
-				case 2:
-					LED2_set(4);//cyan
-					keepLEDon();
-					LED2_set(0);//all off
-					LED2_set(5);//magenta
-					keepLEDon();
-					LED2_set(0);//all off
-					LED2_set(6);//yellow
-					keepLEDon();
-					LED2_set(0);//all off
-					break;
-				case 3:
-					LED2_set(7);//white
-					keepLEDon();
-					LED2_set(0);//all off
-					break;
-				default:
-				break;
-			
-			}
-				
-		}
-		
-		
-		//->check if S1 was pressed, 
-		if (S1_pressed()) {
-				LED1_set(1);
-				continue;
-			}
-			LED1_set(0);
 
-		}	
-		
-	
-
-	
 	
 return 0;
 
