@@ -23,18 +23,19 @@ void ADC0_init(){
 	if(!(ADC0->ULLMEM.GPRCM.PWREN & ADC12_PWREN_ENABLE_ENABLE)) { // check if the PWREN is enabled or not
 		ADC0->ULLMEM.GPRCM.PWREN = ADC12_RSTCTL_RESETSTKYCLR_CLR | ADC12_RSTCTL_KEY_UNLOCK_W | ADC12_RSTCTL_RESETASSERT_ASSERT; // clear, unlock and assert reset for the RSTCTL register
 		ADC0->ULLMEM.GPRCM.PWREN = ADC12_PWREN_KEY_UNLOCK_W | ADC12_PWREN_ENABLE_ENABLE; // unlock the PWREN and enable it
+		// set pa27 pin for analog (lab 1)
 	}
 	ADC0->ULLMEM.GPRCM.CLKCFG |= ADC12_CLKCFG_SAMPCLK_ULPCLK;		// setting ADCCLK to ultra low power clock
 	ADC0->ULLMEM.CLKFREQ |= ADC12_CLKFREQ_FRANGE_RANGE40TO48;		// setting the ADCCLK freq range to the highest possible range
+	ADC0->ULLMEM.CTL0 = 0;																// clear the CTL0 register before working on it
 	ADC0->ULLMEM.CTL0 |= ADC12_CTL0_PWRDN_MANUAL; 				// setting the power down to manual so that the ADC does not turn off after coversion
-	
 	ADC0->ULLMEM.CTL0 |= ADC12_CTL0_SCLKDIV_DIV_BY_8;			// sampling clk div = 8
 	ADC0->ULLMEM.CTL1 |= ADC12_CTL1_CONSEQ_SINGLE;				// single channel single conversion mode is set
-	ADC0->ULLMEM.CTL2 |= ADC12_CTL2_STARTADD_ADDR_00;			// choosing the MEMCTL0 register using STARTADD
-	ADC0->ULLMEM.MEMCTL[0] |= ADC12_MEMCTL_CHANSEL_CHAN_0;	// setting channel 0 to chansel
 	ADC0->ULLMEM.CTL1 |= ADC12_CTL1_TRIGSRC_SOFTWARE;			// setting conversion mode to software triggered
 	ADC0->ULLMEM.CTL1 |= ADC12_CTL1_SAMPMODE_AUTO;				// sampling mode set to auto
-	ADC0->ULLMEM.MEMCTL[0] &= ~(ADC12_MEMCTL_STIME_MASK); // setting the desired sample timer value to SCOMP0
+	ADC0->ULLMEM.CTL2 |= ADC12_CTL2_STARTADD_ADDR_00;			// choosing the MEMCTL0 register using STARTADD
+	ADC0->ULLMEM.MEMCTL[0] |= ADC12_MEMCTL_CHANSEL_CHAN_0;	// setting channel 0 to chansel
+	ADC0->ULLMEM.MEMCTL[0] = ADC12_MEMCTL_STIME_SEL_SCOMP0; // setting the desired sample timer value to SCOMP0
 	
 }
 
