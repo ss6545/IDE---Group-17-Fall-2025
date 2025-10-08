@@ -31,7 +31,7 @@ void TIMG6_init(uint32_t period, uint32_t prescaler);
  * @brief Timer G12 module initialization. General purpose timer
  * @note Timer G12 has no prescaler
 */
-void TIMG12_init(uint32_t period);
+void TIMG12_init(void);
 
 
 #endif // _TIMERS_H_
