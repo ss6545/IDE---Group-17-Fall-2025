@@ -22,7 +22,7 @@
  * @brief Timer G0 module initialization. General purpose timer
  * @note Timer G0 is in Power Domain 0. Check page 3 of the Data Sheet
 */
-void TIMG0_init(uint32_t period, uint32_t prescaler) {
+void TIMG0_init(uint32_t period, uint32_t prescaler, uint32_t clk_div) {
 	//->check if TIMG0 module has power enabled
 	if (!(TIMG0->GPRCM.PWREN & GPTIMER_PWREN_ENABLE_ENABLE)) {
 		//->if here, power was NOT enabled so reset board 
@@ -38,11 +38,11 @@ void TIMG0_init(uint32_t period, uint32_t prescaler) {
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
 	TIMG0->CLKSEL |= GPTIMER_CLKSEL_BUSCLK_SEL_ENABLE;
 	//Optionally divide the TIMCLK using CLKDIV.RATIO
-	TIMG0->CLKDIV |= GPTIMER_CLKDIV_RATIO_DIV_BY_1;
+	TIMG0->CLKDIV |= clk_div;
 	//In TIMx instances with prescalers, optionally set a prescaler using CPS.PCNT
 	TIMG0->COMMONREGS.CPS |= prescaler;
 	//disable counter
-	TIMG0->COUNTERREGS.CTRCTL &= ~GPTIMER_CTRCTL_EN_MASK;
+	TIMG0->COUNTERREGS.CTRCTL = 0;
 	//->counter value after enable
 	//set load to period val
 	TIMG0->COUNTERREGS.LOAD |= period;
@@ -59,7 +59,7 @@ void TIMG0_init(uint32_t period, uint32_t prescaler) {
 	TIMG0->CPU_INT.IMASK |= GPTIMER_CPU_INT_IMASK_Z_MASK;
 	
 	//register the interrupt w NVIC
-	NVIC_EnableIRQ(TIMG0_INT_VECn);
+	NVIC_EnableIRQ(TIMG0_INT_IRQn);
 	//enable interrupts
 	__enable_irq();
 	
@@ -71,7 +71,7 @@ void TIMG0_init(uint32_t period, uint32_t prescaler) {
 /**
  * @brief Timer G6 module initialization. General purpose timer
 */
-void TIMG6_init(uint32_t period, uint32_t prescaler) {
+void TIMG6_init(uint32_t period, uint32_t prescaler, uint32_t clk_div) {
 
 	//->check if TIMG0 module has power enabled
 	if (!(TIMG6->GPRCM.PWREN & GPTIMER_PWREN_ENABLE_ENABLE)) {
@@ -86,13 +86,13 @@ void TIMG6_init(uint32_t period, uint32_t prescaler) {
 	//->TIMERCLOCK (TIMCLK) Configuration
 	//DOUBLE CHECKKKKKKKKKKKKKKKKKKKKKKK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
-	TIMG6->CLKSEL |= GPTIMER_CLKSEL_MFCLK_SEL_ENABLE;
+	TIMG6->CLKSEL |= GPTIMER_CLKSEL_BUSCLK_SEL_ENABLE;
 	//Optionally divide the TIMCLK using CLKDIV.RATIO
-	TIMG6->CLKDIV |= GPTIMER_CLKDIV_RATIO_DIV_BY_8;
+	TIMG6->CLKDIV |= clk_div;
 	//In TIMx instances with prescalers, optionally set a prescaler using CPS.PCNT
 	TIMG6->COMMONREGS.CPS |= prescaler;
 	//disable counter
-	TIMG6->COUNTERREGS.CTRCTL &= ~GPTIMER_CTRCTL_EN_MASK;
+	TIMG6->COUNTERREGS.CTRCTL = 0;
 	//->counter value after enable
 	//set load to period val
 	TIMG6->COUNTERREGS.LOAD |= period;
@@ -109,7 +109,7 @@ void TIMG6_init(uint32_t period, uint32_t prescaler) {
 	TIMG6->CPU_INT.IMASK |= GPTIMER_CPU_INT_IMASK_Z_MASK;
 	
 	//register the interrupt w NVIC
-	NVIC_EnableIRQ(TIMG6_INT_VECn);
+	NVIC_EnableIRQ(TIMG6_INT_IRQn);
 	//enable interrupts
 	__enable_irq();
 	
@@ -123,7 +123,7 @@ void TIMG6_init(uint32_t period, uint32_t prescaler) {
  * @brief Timer G12 module initialization. General purpose timer
  * @note Timer G12 has no prescaler
 */
-void TIMG12_init(void) {
+void TIMG12_init(uint32_t period) {
 
 	//->check if TIMG0 module has power enabled
 	if (!(TIMG12->GPRCM.PWREN & GPTIMER_PWREN_ENABLE_ENABLE)) {
@@ -151,7 +151,7 @@ void TIMG12_init(void) {
 	TIMG12->COUNTERREGS.CTRCTL &= ~GPTIMER_CTRCTL_EN_MASK;
 	//->counter value after enable
 	//set load to period val
-	TIMG12->COUNTERREGS.LOAD |= 32000;
+	TIMG12->COUNTERREGS.LOAD |= period;
 	//set to load val which is the period, downcount, and repeat after event
 	TIMG12->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_CVAE_LDVAL | GPTIMER_CTRCTL_CM_DOWN | GPTIMER_CTRCTL_REPEAT_REPEAT_1;
 	//Enable the TIMCLK by setting CCLKCTL.CLKEN = 1
@@ -165,7 +165,7 @@ void TIMG12_init(void) {
 	TIMG12->CPU_INT.IMASK |= GPTIMER_CPU_INT_IMASK_Z_MASK;
 	
 	//register the interrupt w NVIC
-	NVIC_EnableIRQ(TIMG12_INT_VECn);
+	NVIC_EnableIRQ(TIMG12_INT_IRQn);
 	//enable interrupts
 	__enable_irq();
 	
