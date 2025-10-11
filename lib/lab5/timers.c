@@ -113,8 +113,7 @@ void TIMG6_init(uint32_t period, uint32_t prescaler, uint32_t clk_div) {
 	//enable interrupts
 	__enable_irq();
 	
-	//start (enable) the timer
-	TIMG6->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_EN_MASK;
+	//not starting timer here
 	
 }
 
@@ -170,3 +169,4 @@ void TIMG12_init(uint32_t period) {
 
 
 }
+
