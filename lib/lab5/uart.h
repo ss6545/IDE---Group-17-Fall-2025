@@ -37,7 +37,7 @@ char UART0_getchar(void);
  * @brief Send a full character string over UART0
  * @param[in] ptr_str - Pointer to the string to print
 */
-void UART0_put(uint8_t *ptr_str);
+void UART0_put(char *ptr_str);
 
 
 #endif // _UART_H_

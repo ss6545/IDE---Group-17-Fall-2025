@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ti/devices/msp/msp.h>
-#include "lab2/uart.h"
+#include "lab5/uart.h"
 
 
 /**
@@ -89,7 +89,7 @@ char UART0_getchar(void) {
  * @brief Send a full character string over UART0
  * @param[in] ptr_str - Pointer to the string to print
 */
-void UART0_put(uint8_t *ptr_str) {
+void UART0_put(char *ptr_str) {
 	//check if char that ptr is currently on is NOT null --> meaning NOT end of "string"
 	while(*ptr_str != '\0') {
 		UART0_putchar(*ptr_str);//put char into putchar repeatedly

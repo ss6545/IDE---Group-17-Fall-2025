@@ -138,17 +138,13 @@ void TIMG12_init(uint32_t period) {
 	//->TIMERCLOCK (TIMCLK) Configuration
 	//DOUBLE CHECKKKKKKKKKKKKKKKKKKKKKKK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
-	TIMG12->CLKSEL |= GPTIMER_CLKSEL_MFCLK_SEL_ENABLE;
+	TIMG12->CLKSEL |= GPTIMER_CLKSEL_BUSCLK_SEL_ENABLE;
 	//Optionally divide the TIMCLK using CLKDIV.RATIO
 	TIMG12->CLKDIV |= GPTIMER_CLKDIV_RATIO_DIV_BY_1;
 	
-	//?????NANI?????????
-	//In TIMx instances with prescalers, optionally set a prescaler using CPS.PCNT
-	//TIMG12->COMMONREGS.CPS |= prescaler;
-	
 	
 	//disable counter
-	TIMG12->COUNTERREGS.CTRCTL &= ~GPTIMER_CTRCTL_EN_MASK;
+	TIMG12->COUNTERREGS.CTRCTL = 0;
 	//->counter value after enable
 	//set load to period val
 	TIMG12->COUNTERREGS.LOAD |= period;
