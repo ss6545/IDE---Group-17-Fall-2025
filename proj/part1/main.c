@@ -17,6 +17,9 @@ void TIMG12_IRQHandler(void);
 
 
 static bool toggle = 0;
+bool tim12_running = 1;
+double ms_counter = 0;
+
 
 //Switch interrupts - GPIO0 (IIDX: 0) and GPIO1 (IIDX: 1)
 void GROUP1_IRQHandler(void);
@@ -41,13 +44,13 @@ int main() {
 	S2_init_interrupt();
 	UART0_init();
 	//TIMG0 w 0.5Hz freq
-	TIMG0_init(39999,199,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
+	TIMG0_init(40000,199,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
 	//TIMG6 w 0.5Hz freq
 	//TIMG6_init(39999,199,GPTIMER_CLKDIV_RATIO_DIV_BY_8);
 	//TIMG6 w 2 Hz freq
-	TIMG6_init(19999,99,GPTIMER_CLKDIV_RATIO_DIV_BY_8);
+	TIMG6_init(20000,99,GPTIMER_CLKDIV_RATIO_DIV_BY_8);
 	//TIMG12 w 1kHz freq
-	TIMG12_init(19);
+	TIMG12_init(32000);
 	
 	//int numS2presses = 0;
 	
@@ -65,50 +68,57 @@ return 0;
 
 //Timer Interrupts
 void TIMG0_IRQHandler(void) {
-	TIMG0->CPU_INT.ICLR &= ~GPTIMER_CPU_INT_ICLR_Z_MASK;
+	TIMG0->CPU_INT.ICLR |= GPTIMER_CPU_INT_ICLR_Z_MASK;
 	UART0_put("\n\rTIMG0 check");
 }
 
 void TIMG6_IRQHandler(void) {
-
+	TIMG6->CPU_INT.ICLR |= GPTIMER_CPU_INT_ICLR_Z_MASK;
 	UART0_put("\n\rTIMG6 check");
 	
-	if (toggle) {//if 1, LED is flashing
-	
-		
-	
-	}
-	
-	
-	while (1) {
-		//tracks status of switch
-		//0 is off
-		//1 is toggling LED on and off for 0.5 sec
-		int numS1presses=0;
-		
-		if (S1_pressed()) {
-			numS1presses += 1;
-			if (numS1presses == 2) numS1presses = 0;//if past 2nd press -> set back to off
-			
-			switch (numS1presses) {
-				case 0:
-					LED1_set(0);//off
-					break;
-				case 1:
-					LED1_set(1);
-					LED1_set(0);
-					break;
-				default:
-					break;
-			}
-	
-		}
+//	if (toggle) {//if 1, LED is flashing
 
-	}
+//		
+//	
+//	}
+//	
+//	
+//	while (1) {
+//		//tracks status of switch
+//		//0 is off
+//		//1 is toggling LED on and off for 0.5 sec
+//		int numS1presses=0;
+//		
+//		if (S1_pressed()) {
+//			numS1presses += 1;
+//			if (numS1presses == 2) numS1presses = 0;//if past 2nd press -> set back to off
+//			
+//			switch (numS1presses) {
+//				case 0:
+//					LED1_set(0);//off
+//					break;
+//				case 1:
+//					LED1_set(1);
+//					LED1_set(0);
+//					break;
+//				default:
+//					break;
+//			}
+//	
+//		}
+
+//	}
 	
 }
 
-void TIMG12_IRQHandler(void) {}
+void TIMG12_IRQHandler(void) {
+
+	UART0_put("\n\rTIMG12 check");
+	if (tim12_running) {
+		ms_counter++;
+		UART0_put("\n\rTIMG12 ms_counter incremented check");
+	}
+}
 
 //Switch interrupts - GPIO0 (IIDX: 0) and GPIO1 (IIDX: 1)
 void GROUP1_IRQHandler(void) {}
