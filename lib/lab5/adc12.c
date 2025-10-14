@@ -12,7 +12,7 @@
 
 #include <ti/devices/msp/msp.h>
 #include <stdint.h>
-#include "peripherals/hw_adc12.h"
+#include "ti/devices/msp/peripherals/hw_adc12.h"
 #include "adc12.h"
 #include "../lib/sysctl.h"
 
@@ -56,4 +56,5 @@ uint32_t ADC0_getVal(){
 	}
 	return 0;
 }
+
 
