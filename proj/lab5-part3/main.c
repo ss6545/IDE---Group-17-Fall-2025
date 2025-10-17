@@ -14,9 +14,7 @@ IDE Lab05 -
 #include "lab5/camera.h"
 #include "uart_extras.h"
 
-void TIMG0_IRQHandler(void);
-void TIMG6_IRQHandler(void);
-void TIMG12_IRQHandler(void);
+
 
 //**part1 stuff**
 //static bool toggle = 0;
@@ -55,24 +53,25 @@ int main() {
 	S2_init_interrupt();
 	UART0_init();
 	ADC0_init();
+	Camera_init();
+	
 	//TIMG0 w 0.5Hz freq
-	TIMG0_init(40000,199,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
+	//TIMG0_init(40000,199,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
 	//TIMG6 w 0.5Hz freq
 	//TIMG6_init(39999,199,GPTIMER_CLKDIV_RATIO_DIV_BY_8);
 	//TIMG6 w 2 Hz freq
-	TIMG6_init(20000,99,GPTIMER_CLKDIV_RATIO_DIV_BY_8);
+	//TIMG6_init(20000,99,GPTIMER_CLKDIV_RATIO_DIV_BY_8);
 	//TIMG12 w 1kHz freq
 	//TIMG12_init(32000);
 	
 	
-	//->do these in switch interrupts
-	TIMG0->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_EN_MASK;//enable the timer
-	TIMG6->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_EN_MASK;//enable the timer
+	//TIMG0->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_EN_MASK;//enable the timer
+	//TIMG6->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_EN_MASK;//enable the timer
 	//TIMG12->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_EN_MASK;//enable the timer
 	
 
 	//string holder for cameraData output to putty 
-	char stringHolder[8];
+	//char stringHolder[8];
 	//holds cameraData pointer
 	uint16_t* cameraData_ptr = Camera_getData();
 	
