@@ -53,21 +53,40 @@ void Camera_init(void) {
 		
 	//->IOMUX stuff
 	//Select PINCM3 for use as port I/O bc PINCM3
-	IOMUX->SECCFG.PINCM[2] |= (0x80 | 0x01);
+	IOMUX->SECCFG.PINCM[2] |= (IOMUX_PINCM_PC_CONNECTED | IOMUX_PINCM3_PF_GPIOA_DIO28 | IOMUX_PINCM_INENA_ENABLE);
 	//->SI via GPIO stuff for output over DIO27 bc PA28
-	GPIOA->DOE31_0 |= (GPIO_DOE31_0_DIO28_ENABLE);
+	GPIOA->DOESET31_0 |= (GPIO_DOE31_0_DIO28_ENABLE);
+	//SI to 0 
+	GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO12_CLR;
+	//TIMG6 val for 7.5 ms -> freq = 1/7.5
+	TIMG6_init(7500,31,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
+	//enable the timer
+	TIMG6->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_EN_MASK;
+	
 	
 	//->IOMUX stuff
 	//Select PINCM34 for use as port I/O bc PINCM34
-	IOMUX->SECCFG.PINCM[33] |= (0x80 | 0x01);
+	IOMUX->SECCFG.PINCM[33] |= (IOMUX_PINCM_PC_CONNECTED | IOMUX_PINCM34_PF_GPIOA_DIO12);//TIMG0_CCP0);
 	//->CLK via GPIO stuff for output over DIO11 bc PA12
-	GPIOA->DOE31_0 |= (GPIO_DOE31_0_DIO12_ENABLE);
+	GPIOA->DOESET31_0 |= (GPIO_DOE31_0_DIO12_ENABLE);
+	//clk to 0
+	GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO12_CLR;
+	//TIMG0 w 100kHz freq
+	TIMG0_init(160,1,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
+	
+	
 	//ADC Init
 	ADC0_init();
+	
+	//DISABLE TIMG0
+	TIMG0->COMMONREGS.CCLKCTL &= ~GPTIMER_CCLKCTL_CLKEN_MASK;
+	
 	//TIMG0 w 100kHz freq
-	TIMG0_init(2,159,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
+	//TIMG0_init(2,159,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
 	//TIMG6 val for 7.5 ms -> freq = 1/7.5
-	TIMG6_init(8000,31,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
+	//TIMG6_init(8000,31,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
+	//
+	
 	
 }
 
@@ -104,21 +123,21 @@ void TIMG0_IRQHandler(void) {
 	//CLK LOW
 	GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO12_CLR;
 	
+	//get value from ADC and store it at currnet index of cameraData
+	cameraData[pixelCounter] = (uint16_t)ADC0_getVal();
+	//increment index
+	pixelCounter++;
+	
 	//->check if cameraData is full; 
 	//if full: set the cameraData_complete flag, 
 	//				 disable the CLK timer, 
 	//				 reset the index.
-	if (pixelCounter >= 128) {//if cameraData is full
+	if (pixelCounter == 128) {//if cameraData is full
 		cameraData_complete = 1;
-		TIMG0->COUNTERREGS.CTRCTL &= ~GPTIMER_CTRCTL_EN_MASK;
 		pixelCounter = 0;
+		TIMG0->COUNTERREGS.CTRCTL &= ~GPTIMER_CTRCTL_EN_MASK;
 	}
-	else {//->if here, need to fill up cameraData 
-		//get value from ADC and store it at currnet index of cameraData
-		cameraData[pixelCounter] = (uint16_t)ADC0_getVal();
-		//increment index
-		pixelCounter++;
-	}
+	
 }
 
 void TIMG6_IRQHandler(void) {
@@ -126,23 +145,30 @@ void TIMG6_IRQHandler(void) {
 	//UART0_put("\n\rTIMG6 check");
 	//**part 3 stuff**
 	//turn off timg0
-	TIMG0->COUNTERREGS.CTRCTL &= ~GPTIMER_CTRCTL_EN_MASK;
+	//TIMG0->COMMONREGS.CCLKCTL &= ~GPTIMER_CCLKCTL_CLKEN_MASK;
+		TIMG0->COUNTERREGS.CTRCTL &= ~GPTIMER_CTRCTL_EN_MASK;
+
+	//set cameraData_complete to 0
+	cameraData_complete = 0;
 	//->if done reading data, then begin new capture
-	if (cameraData_complete) {
-		//1-SI,CLK LOW
-		GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO28_CLR;
-		GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO12_CLR;
-		//2-SI HIGH
-		GPIOA->DOUTSET31_0 |= GPIO_DOUTSET31_0_DIO28_SET;
-		//3-CLK HIGH
-		GPIOA->DOUTSET31_0 |= GPIO_DOUTSET31_0_DIO12_SET;
-		//4-SI,CLK LOW
-		GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO28_CLR;
-		GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO12_CLR;
-		
-		
-		pixelCounter = 0;
+	
+	//1-check if CLK HIGH; if so, make CLK LOW
+	if (GPIOA->DOUTSET31_0 & GPIO_DOUTSET31_0_DIO12_SET) {
+	GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO12_CLR;
 	}
+	//SI LOW
+	GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO12_CLR;
+	//2-SI HIGH
+	GPIOA->DOUTSET31_0 |= GPIO_DOUTSET31_0_DIO28_SET;
+	//3-CLK HIGH
+	GPIOA->DOUTSET31_0 |= GPIO_DOUTSET31_0_DIO12_SET;
+	//4-SI,CLK LOW
+	GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO28_CLR;
+	GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO12_CLR;
+	
 	//->ENABLE TIMG0
 	TIMG0->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_EN_MASK;
+	//TIMG0->COMMONREGS.CCLKCTL |= GPTIMER_CCLKCTL_CLKEN_MASK;
+		
+	
 }

@@ -113,17 +113,26 @@ function plotdata(trace, smoothtrace, bintrace, plt, ax1, ax2, ax3)
     % TODO: Plot data
     %   plot(ax, trace)
     plot(ax1,trace);
-    title(ax1, 'Raw Data');
-    xlabel(ax1, 'Data');
-    ylabel(ax1, 'Brightness');
+    title(ax1, 'Raw Data', 'FontSize',12);
+    xlabel(ax1, 'Data','FontSize',12);
+    ylabel(ax1, 'Brightness','FontSize',12);
+    ax1.FontSize = 10;
+    ylim(ax1,[0,3000]);
     plot(ax2,smoothtrace);
-    title(ax2, 'Smoothe Trace Data');
-    xlabel(ax2, 'Data');
-    ylabel(ax2, 'Brightness');
+
+    title(ax2, 'Smoothe Trace Data','FontSize',12);
+    xlabel(ax2, 'Data','FontSize',12);
+    ylabel(ax2, 'Brightness','FontSize',12);
+    ax2.FontSize = 10;
+    ylim(ax2,[0,3000]);
     plot(ax3,bintrace);
-    title(ax3, 'Edge Trace Data');
-    xlabel(ax3, 'Data');
-    ylabel(ax3, 'Edge (0/1)');
+    
+    title(ax3, 'Edge Trace Data','FontSize',12);
+    xlabel(ax3, 'Data','FontSize',12);
+    ylabel(ax3, 'Edge (0/1)','FontSize',12);
+    ax3.FontSize = 10;
+    ylim(ax3,[0,1]);
+ 
     refreshdata
     drawnow
 end

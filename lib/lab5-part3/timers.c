@@ -36,27 +36,27 @@ void TIMG0_init(uint32_t period, uint32_t prescaler, uint32_t clk_div) {
 	// ALSO CLEAR THE COUNTER CONTROL REG
 	//->TIMERCLOCK (TIMCLK) Configuration
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
-	TIMG0->CLKSEL |= GPTIMER_CLKSEL_BUSCLK_SEL_ENABLE;
+	TIMG0->CLKSEL = GPTIMER_CLKSEL_BUSCLK_SEL_ENABLE;
 	//Optionally divide the TIMCLK using CLKDIV.RATIO
-	TIMG0->CLKDIV |= clk_div;
+	TIMG0->CLKDIV = clk_div;
 	//In TIMx instances with prescalers, optionally set a prescaler using CPS.PCNT
-	TIMG0->COMMONREGS.CPS |= prescaler;
+	TIMG0->COMMONREGS.CPS = prescaler;
 	//disable counter
 	TIMG0->COUNTERREGS.CTRCTL = 0;
 	//->counter value after enable
 	//set load to period val
-	TIMG0->COUNTERREGS.LOAD |= period;
+	TIMG0->COUNTERREGS.LOAD = period;
 	//set to load val which is the period, downcount, and repeat after event
-	TIMG0->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_CVAE_LDVAL | GPTIMER_CTRCTL_CM_DOWN | GPTIMER_CTRCTL_REPEAT_REPEAT_1;
+	TIMG0->COUNTERREGS.CTRCTL = GPTIMER_CTRCTL_CVAE_LDVAL | GPTIMER_CTRCTL_CM_DOWN | GPTIMER_CTRCTL_REPEAT_REPEAT_1 | GPTIMER_CTRCTL_EN_ENABLED;
 	//Enable the TIMCLK by setting CCLKCTL.CLKEN = 1
-	TIMG0->COMMONREGS.CCLKCTL |= GPTIMER_CCLKCTL_CLKEN_ENABLED;
+	TIMG0->COMMONREGS.CCLKCTL = GPTIMER_CCLKCTL_CLKEN_ENABLED;
 
 	//disable interrupts 
 	__disable_irq();
 	//clear zero event 
-	TIMG0->CPU_INT.ICLR |= GPTIMER_CPU_INT_ICLR_Z_MASK;
+	TIMG0->CPU_INT.ICLR |= GPTIMER_CPU_INT_ICLR_Z_CLR;
 	//enable zero event
-	TIMG0->CPU_INT.IMASK |= GPTIMER_CPU_INT_IMASK_Z_MASK;
+	TIMG0->CPU_INT.IMASK |= GPTIMER_CPU_INT_IMASK_Z_SET;
 	
 	//register the interrupt w NVIC
 	NVIC_EnableIRQ(TIMG0_INT_IRQn);
@@ -87,27 +87,27 @@ void TIMG6_init(uint32_t period, uint32_t prescaler, uint32_t clk_div) {
 	//->TIMERCLOCK (TIMCLK) Configuration
 	//DOUBLE CHECKKKKKKKKKKKKKKKKKKKKKKK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
-	TIMG6->CLKSEL |= GPTIMER_CLKSEL_BUSCLK_SEL_ENABLE;
+	TIMG6->CLKSEL = GPTIMER_CLKSEL_BUSCLK_SEL_ENABLE;
 	//Optionally divide the TIMCLK using CLKDIV.RATIO
-	TIMG6->CLKDIV |= clk_div;
+	TIMG6->CLKDIV = clk_div;
 	//In TIMx instances with prescalers, optionally set a prescaler using CPS.PCNT
-	TIMG6->COMMONREGS.CPS |= prescaler;
+	TIMG6->COMMONREGS.CPS = prescaler;
 	//disable counter
 	TIMG6->COUNTERREGS.CTRCTL = 0;
 	//->counter value after enable
 	//set load to period val
-	TIMG6->COUNTERREGS.LOAD |= period;
+	TIMG6->COUNTERREGS.LOAD = period;
 	//set to load val which is the period, downcount, and repeat after event
-	TIMG6->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_CVAE_LDVAL | GPTIMER_CTRCTL_CM_DOWN | GPTIMER_CTRCTL_REPEAT_REPEAT_1;
+	TIMG6->COUNTERREGS.CTRCTL = GPTIMER_CTRCTL_CVAE_LDVAL | GPTIMER_CTRCTL_CM_DOWN | GPTIMER_CTRCTL_REPEAT_REPEAT_1 | GPTIMER_CTRCTL_EN_ENABLED;
 	//Enable the TIMCLK by setting CCLKCTL.CLKEN = 1
-	TIMG6->COMMONREGS.CCLKCTL |= GPTIMER_CCLKCTL_CLKEN_ENABLED;
+	TIMG6->COMMONREGS.CCLKCTL = GPTIMER_CCLKCTL_CLKEN_ENABLED;
 	
 	//disable interrupts 
 	__disable_irq();
 	//clear zero event 
-	TIMG6->CPU_INT.ICLR |= GPTIMER_CPU_INT_ICLR_Z_MASK;
+	TIMG6->CPU_INT.ICLR |= GPTIMER_CPU_INT_ICLR_Z_CLR;
 	//enable zero event
-	TIMG6->CPU_INT.IMASK |= GPTIMER_CPU_INT_IMASK_Z_MASK;
+	TIMG6->CPU_INT.IMASK |= GPTIMER_CPU_INT_IMASK_Z_SET;
 	
 	//register the interrupt w NVIC
 	NVIC_EnableIRQ(TIMG6_INT_IRQn);
@@ -142,25 +142,25 @@ void TIMG12_init(uint32_t period) {
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
 	TIMG12->CLKSEL |= GPTIMER_CLKSEL_BUSCLK_SEL_ENABLE;
 	//Optionally divide the TIMCLK using CLKDIV.RATIO
-	TIMG12->CLKDIV |= GPTIMER_CLKDIV_RATIO_DIV_BY_1;
+	TIMG12->CLKDIV = GPTIMER_CLKDIV_RATIO_DIV_BY_1;
 	
 	
 	//disable counter
 	TIMG12->COUNTERREGS.CTRCTL = 0;
 	//->counter value after enable
 	//set load to period val
-	TIMG12->COUNTERREGS.LOAD |= period;
+	TIMG12->COUNTERREGS.LOAD = period;
 	//set to load val which is the period, downcount, and repeat after event
-	TIMG12->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_CVAE_LDVAL | GPTIMER_CTRCTL_CM_DOWN | GPTIMER_CTRCTL_REPEAT_REPEAT_1;
+	TIMG12->COUNTERREGS.CTRCTL = GPTIMER_CTRCTL_CVAE_LDVAL | GPTIMER_CTRCTL_CM_DOWN | GPTIMER_CTRCTL_REPEAT_REPEAT_1 | GPTIMER_CTRCTL_EN_ENABLED;
 	//Enable the TIMCLK by setting CCLKCTL.CLKEN = 1
-	TIMG12->COMMONREGS.CCLKCTL |= GPTIMER_CCLKCTL_CLKEN_ENABLED;
+	TIMG12->COMMONREGS.CCLKCTL = GPTIMER_CCLKCTL_CLKEN_ENABLED;
 	
 	//disable interrupts 
 	__disable_irq();
 	//clear zero event 
-	TIMG12->CPU_INT.ICLR |= GPTIMER_CPU_INT_ICLR_Z_MASK;
+	TIMG12->CPU_INT.ICLR |= GPTIMER_CPU_INT_ICLR_Z_CLR;
 	//enable zero event
-	TIMG12->CPU_INT.IMASK |= GPTIMER_CPU_INT_IMASK_Z_MASK;
+	TIMG12->CPU_INT.IMASK |= GPTIMER_CPU_INT_IMASK_Z_SET;
 	
 	//register the interrupt w NVIC
 	NVIC_EnableIRQ(TIMG12_INT_IRQn);
