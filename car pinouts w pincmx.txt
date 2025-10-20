@@ -1,0 +1,94 @@
+LAYOUT:
+
+Module
+Label (or Channel #)
+Hardware
+Pin Out
+PINCMx
+
+
+
+UART1
+UART1 TX
+HM-10 BLE RX
+PA8
+19
+
+
+UART1
+UART1 RX
+HM-10 BLE TX
+PA9, SW1
+20
+
+I2C1
+SCL
+OLED SCL
+PB2
+15
+
+I2C1
+SDA
+OLED SDA
+PB3
+16
+
+TIMA0
+Channel 0
+DC Motor
+PB8
+25
+
+TIMA0
+Channel 1
+DC Motor
+PB12
+29
+
+TIMA0
+Channel 2
+DC Motor
+PB17
+43
+
+TIMA0
+Channel 3
+DC Motor
+PB13
+30
+
+TIMA1
+Channel 0
+Servo Motor
+PB4
+17
+
+TIMG0
+Channel 0
+Camera CLK
+PA12
+34
+
+ADC0
+Channel 0
+Camera AO
+PA27
+60
+
+GPIOA
+N/A
+Camera SI
+PA28
+3
+
+GPIOB
+N/A
+Left DC EN
+PB19
+45
+
+GPIOA
+N/A
+Right DC EN
+PA22
+47
