@@ -18,13 +18,13 @@
  * @brief Timer G0 module initialization. General purpose timer
  * @note Timer G0 is in Power Domain 0. Check page 3 of the Data Sheet
 */
-void TIMG0_init(uint32_t period, uint32_t prescaler);
+void TIMG0_init(uint32_t period, uint32_t prescaler,uint32_t clk_div);
 
 
 /**
  * @brief Timer G6 module initialization. General purpose timer
 */
-void TIMG6_init(uint32_t period, uint32_t prescaler);
+void TIMG6_init(uint32_t period, uint32_t prescaler,uint32_t clk_div);
 
 
 /**
@@ -42,7 +42,7 @@ void TIMG12_init(uint32_t period);
  * @param[in] percenetDutyCycle - PWM duty cycle positive
  * @note Store period to be able to adjust duty cycle percentage later
 */
-void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double percentDutyCycle);
+void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double percentDutyCycle,uint32_t clk_div);
 
 
 /**
