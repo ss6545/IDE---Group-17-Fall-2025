@@ -454,7 +454,7 @@ void TIMA1_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 void TIMA0_PWM_DutyCycle(uint8_t pin, uint32_t period, double percentDutyCycle) {
 
 	// 	-> index chooses channel and val at index determines capture or compare mode
-	TIMA0->COUNTERREGS.CC_01[pin] = (uint32_t)(period*percentDutyCycle) ;//TIMA0 channel 0 set to compare
+	TIMA0->COUNTERREGS.CC_01[pin] = (uint32_t)(period*(1-percentDutyCycle)) ;//TIMA0 channel 0 set to compare
 
 
 }
@@ -468,7 +468,7 @@ void TIMA0_PWM_DutyCycle(uint8_t pin, uint32_t period, double percentDutyCycle) 
 void TIMA1_PWM_DutyCycle(uint8_t pin, uint32_t period, double percentDutyCycle) {
 
 	// 	-> index chooses channel and val at index determines capture or compare mode
-	TIMA1->COUNTERREGS.CC_01[pin] = (uint32_t)(period*percentDutyCycle) ;//TIMA1 channel 0 set to compare
+	TIMA1->COUNTERREGS.CC_01[0] = (uint32_t)(period*(1-percentDutyCycle)) ;//TIMA1 channel 0 set to compare
 
 }
 
