@@ -259,7 +259,7 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 			//->PWM Setup
 			//Set the TIMx.CC_xy[0/1] value to configure the duty cycle 
 			// 	-> index chooses channel and val at index determines capture or compare mode
-			TIMA0->COUNTERREGS.CC_01[1] = (uint32_t)(period*percentDutyCycle) ;//TIMA0 channel 0 set to compare
+			TIMA0->COUNTERREGS.CC_01[1] = (uint32_t)(period*(1-percentDutyCycle)) ;//TIMA0 channel 0 set to compare
 			//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 			//	-> index chooses channel and val at index determines capture or compare mode
 			//TIMA0->COUNTERREGS.CCCTL_01[pin] = 0;//TIMA0 channel 0 needs control for compare
@@ -292,7 +292,7 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 			//->PWM Setup
 			//Set the TIMx.CC_xy[0/1] value to configure the duty cycle 
 			// 	-> index chooses channel and val at index determines capture or compare mode
-			TIMA0->COUNTERREGS.CC_23[0] = (uint32_t)(period*percentDutyCycle) ;//TIMA0 channel 0 set to compare
+			TIMA0->COUNTERREGS.CC_23[0] = (uint32_t)(period*(1-percentDutyCycle)) ;//TIMA0 channel 0 set to compare
 			//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 			//	-> index chooses channel and val at index determines capture or compare mode
 			//TIMA0->COUNTERREGS.CCCTL_01[pin] = 0;//TIMA0 channel 0 needs control for compare
@@ -325,7 +325,7 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 			//->PWM Setup
 			//Set the TIMx.CC_xy[0/1] value to configure the duty cycle 
 			// 	-> index chooses channel and val at index determines capture or compare mode
-			TIMA0->COUNTERREGS.CC_23[1] = (uint32_t)(period*percentDutyCycle) ;//TIMA0 channel 0 set to compare
+			TIMA0->COUNTERREGS.CC_23[1] = (uint32_t)(period*(1-percentDutyCycle)) ;//TIMA0 channel 0 set to compare
 			//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 			//	-> index chooses channel and val at index determines capture or compare mode
 			//TIMA0->COUNTERREGS.CCCTL_01[pin] = 0;//TIMA0 channel 0 needs control for compare
@@ -415,25 +415,25 @@ void TIMA1_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 	//->PWM Setup
 	//Set the TIMx.CC_xy[0/1] value to configure the duty cycle 
 	// 	-> index chooses channel and val at index determines capture or compare mode
-	TIMA1->COUNTERREGS.CC_01[pin] = (uint32_t)(period*percentDutyCycle) ;//TIMA0 channel 0 set to compare
+	TIMA1->COUNTERREGS.CC_01[0] = (uint32_t)(period*(1-percentDutyCycle)) ;//TIMA0 channel 0 set to compare
 	//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 	//	-> index chooses channel and val at index determines capture or compare mode
 	//TIMA0->COUNTERREGS.CCCTL_01[pin] = 0;//TIMA0 channel 0 needs control for compare
 	//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
-	TIMA1->COUNTERREGS.CCCTL_01[pin] = GPTIMER_CCCTL_01_COC_COMPARE;
+	TIMA1->COUNTERREGS.CCCTL_01[0] = GPTIMER_CCCTL_01_COC_COMPARE;
 	//configure CCP as output
 	TIMA1->COMMONREGS.CCPD = GPTIMER_CCPD_C0CCP0_OUTPUT;//should be = or |= ???
 	//In TIMx.CCACT_xy[0/1], set the CCP output action settings for compare events, zero events, load events, 
 	//		software force action, or fault events (TIMA only).
 	//	?? set this up for rising edge? like the compare ??
-	TIMA1->COUNTERREGS.CCACT_01[pin] = GPTIMER_CCACT_01_LACT_CCP_HIGH | GPTIMER_CCACT_01_CDACT_CCP_LOW;
+	TIMA1->COUNTERREGS.CCACT_01[0] = GPTIMER_CCACT_01_LACT_CCP_HIGH | GPTIMER_CCACT_01_CDACT_CCP_LOW;
 	//In TIMx.OCTL_xy[0/1], set CCPO = 0 to select the signal generator output
-	TIMA1->COUNTERREGS.OCTL_01[pin] = GPTIMER_OCTL_01_CCPO_FUNCVAL;
+	TIMA1->COUNTERREGS.OCTL_01[0] = GPTIMER_OCTL_01_CCPO_FUNCVAL;
 	//Enable the corresponding CCP output by setting ODIS.C0CCPn to 1 for the corresponding counter n.
 	TIMA1->COMMONREGS.ODIS = GPTIMER_ODIS_C0CCP0_CCP_OUTPUT_LOW;
 	//Configure polarity of the signal using the CCPOINV bit, 
 	//	and configure CCPIV to specify the CCP output state while disabled.
-	TIMA1->COUNTERREGS.OCTL_01[pin] |= GPTIMER_OCTL_01_CCPOINV_NOINV | GPTIMER_OCTL_01_CCPIV_LOW;
+	TIMA1->COUNTERREGS.OCTL_01[0] |= GPTIMER_OCTL_01_CCPOINV_NOINV | GPTIMER_OCTL_01_CCPIV_LOW;
 	
 	
 	//Enable the counter by setting TIMx.CTRCTL.EN = 1.
