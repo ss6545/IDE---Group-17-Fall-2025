@@ -360,8 +360,8 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 	
 	//clk to 0
 	//GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO12_CLR;
-	//TIMG0 w 100kHz freq
-	TIMG0_init(160,1,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
+	//TIMG0 w 10kHz freq
+	//TIMG0_init(1600,1,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
 	
 }
 
@@ -441,8 +441,8 @@ void TIMA1_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 	TIMA1->COUNTERREGS.CTRCTL = GPTIMER_CTRCTL_EN_MASK;
 	//clk to 0
 	//GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO12_CLR;
-	//TIMG0 w 100kHz freq
-	TIMG0_init(160,1,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
+	//TIMG0 w 10kHz freq
+	//TIMG0_init(1600,1,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
 }
 
 
