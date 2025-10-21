@@ -25,6 +25,8 @@ int main() {
 	ADC0_init();
 	Camera_init();
 	
+	//20% duty cycle -------V & 10k Hz Freq calc-> TIMA0 is 32 bit so no prescaler
+	TIMA0_PWM_init(0,3200,0,20,GPTIMER_CLKDIV_RATIO_DIV_BY_1);	
 
 
 
