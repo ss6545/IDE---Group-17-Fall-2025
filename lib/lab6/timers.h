@@ -42,7 +42,7 @@ void TIMG12_init(uint32_t period);
  * @param[in] percenetDutyCycle - PWM duty cycle positive
  * @note Store period to be able to adjust duty cycle percentage later
 */
-void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double percentDutyCycle,uint32_t clk_div);
+void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double percentDutyCycle, uint32_t clk_div);
 
 
 /**
@@ -53,7 +53,7 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
  * @param[in] percenetDutyCycle - PWM duty cycle positive
  * @note Store period to be able to adjust duty cycle percentage later
 */
-void TIMA1_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double percentDutyCycle);
+void TIMA1_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double percentDutyCycle, uint32_t clk_div);
 
 
 /**
@@ -61,7 +61,7 @@ void TIMA1_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
  * @param[in] pin - Timer PWM output pin / channel
  * @param[in] percentDutyCycle - Duty cycle to change to
 */
-void TIMA0_PWM_DutyCycle(uint8_t pin, double percentDutyCycle);
+void TIMA0_PWM_DutyCycle(uint8_t pin, uint32_t period, double percentDutyCycle);
 
 
 /**
@@ -69,7 +69,7 @@ void TIMA0_PWM_DutyCycle(uint8_t pin, double percentDutyCycle);
  * @param[in] pin - Timer PWM output pin / channel
  * @param[in] percentDutyCycle - Duty cycle to change to
 */
-void TIMA1_PWM_DutyCycle(uint8_t pin, double percentDutyCycle);
+void TIMA1_PWM_DutyCycle(uint8_t pin, uint32_t period, double percentDutyCycle);
 
 
 #endif // _TIMERS_H_
