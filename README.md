@@ -120,22 +120,22 @@ This class has a car! You get to drive it.
 Listed here are the current pinouts for the car. If you want your code to work
 on the car, it should interact with these specific pins.
 
-| Module | Label        | Pin Out  |
-| ------ | -----------  | -------- |
-| UART1  | HM-10 BLE RX | PA8      |
-| UART1  | HM-10 BLE TX | PA9, SW1 |
-| I2C1   | OLED SCL     | PB2      |
-| I2C1   | OLED SDA     | PB3      |
-| TIMA0  | Channel 0    | PB8      |
-| TIMA0  | Channel 1    | PB12     |
-| TIMA0  | Channel 2    | PB17     |
-| TIMA0  | Channel 3    | PB13     |
-| TIMA1  | Channel 0    | PB4      |
-| TIMG0  | Channel 0    | PA12     |
-| ADC0   | Channel 0    | PA27     |
-| GPIOB  | Left DC EN   | PB19     |
-| GPIOA  | Right DC EN  | PA22     |
-| GPIOA  | Camera SI    | PA28     |
+| Module | Label        | Pin Out  | PINCMx |
+| ------ | -----------  | -------- | ------ |
+| UART1  | HM-10 BLE RX | PA8      | 19     |
+| UART1  | HM-10 BLE TX | PA9, SW1 | 20     |
+| I2C1   | OLED SCL     | PB2      | 15     |
+| I2C1   | OLED SDA     | PB3      | 16     |
+| TIMA0  | Channel 0    | PB8      | 25     |
+| TIMA0  | Channel 1    | PB12     | 29     |
+| TIMA0  | Channel 2    | PB17     | 43     |
+| TIMA0  | Channel 3    | PB13     | 30     |
+| TIMA1  | Channel 0    | PB4      | 17     |
+| TIMG0  | Channel 0    | PA12     | 34     |
+| ADC0   | Channel 0    | PA27     | 60     |
+| GPIOB  | Left DC EN   | PB19     | 3      |
+| GPIOA  | Right DC EN  | PA22     | 45     |
+| GPIOA  | Camera SI    | PA28     | 47     |
 
 > ⚠️ Note: SW1 is a physical header on the board that must be moved to connect PA9 for
 > UART1 functionality to work as expected.
