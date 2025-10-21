@@ -195,6 +195,17 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 		TIMA0->GPRCM.PWREN |= GPTIMER_PWREN_KEY_UNLOCK_W | GPTIMER_PWREN_ENABLE_ENABLE;
 	}//->we have enabled power	
 	
+	
+	//check if GPIOB module has power enabled
+	if (!(GPIOB->GPRCM.PWREN & GPIO_PWREN_ENABLE_ENABLE)) {
+		//->if here, power was NOT enabled so reset board
+		//	set the key first to unlock write capability, assert the new key, and set the clear bit
+		GPIOB->GPRCM.RSTCTL |= GPIO_RSTCTL_KEY_UNLOCK_W | GPIO_RSTCTL_RESETASSERT_MASK;
+		//->now enable power
+		//set the key first to unlock write capability and enable power
+		GPIOB->GPRCM.PWREN |= GPIO_PWREN_KEY_UNLOCK_W | GPIO_PWREN_ENABLE_ENABLE;
+	}
+	
 	//->TIMERCLOCK (TIMCLK) Configuration
 	//DOUBLE CHECKKKKKKKKKKKKKKKKKKKKKKK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
@@ -217,7 +228,7 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 	
 		case 0:
 			//->IOMUX pin stuff
-			//Select PINCM25 for use as port I/O bc TIMA0 is PB8
+			//Select PINCM25 for use as port I/O bc TIMA0.0 is PB8
 			IOMUX->SECCFG.PINCM[24] |= (IOMUX_PINCM_PC_CONNECTED | IOMUX_PINCM25_PF_TIMA0_CCP0);
 			//->GPIO pin output stuff
 			//->CLK via GPIO stuff for output over DIO8 bc PB8
@@ -226,31 +237,29 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 			//->PWM Setup
 			//Set the TIMx.CC_xy[0/1] value to configure the duty cycle 
 			// 	-> index chooses channel and val at index determines capture or compare mode
-			TIMA0->COUNTERREGS.CC_01[0] = (uint32_t)(period*(1-percentDutyCycle)) ;//TIMA0 channel 0 set to compare
+			TIMA0->COUNTERREGS.CC_01[0] = (uint32_t) (period*(1-(percentDutyCycle)/100)) ;//TIMA0 channel 0 set to compare
 			//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 			//	-> index chooses channel and val at index determines capture or compare mode
-			//TIMA0->COUNTERREGS.CCCTL_01[pin] = 0;//TIMA0 channel 0 needs control for compare
-			//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 			TIMA0->COUNTERREGS.CCCTL_01[0] = GPTIMER_CCCTL_01_COC_COMPARE;
 			//configure CCP as output
 			TIMA0->COMMONREGS.CCPD = GPTIMER_CCPD_C0CCP0_OUTPUT;//should be = or |= ???
 			//In TIMx.CCACT_xy[0/1], set the CCP output action settings for compare events, zero events, load events, 
 			//		software force action, or fault events (TIMA only).
 			//	?? set this up for rising edge? like the compare ??
-			TIMA0->COUNTERREGS.CCACT_01[0] = GPTIMER_CCACT_01_LACT_CCP_HIGH | GPTIMER_CCACT_01_CDACT_CCP_LOW;
-			//In TIMx.OCTL_xy[0/1], set CCPO = 0 to select the signal generator output
-			TIMA0->COUNTERREGS.OCTL_01[0] = GPTIMER_OCTL_01_CCPO_FUNCVAL;
-			//Enable the corresponding CCP output by setting ODIS.C0CCPn to 1 for the corresponding counter n.
-			TIMA0->COMMONREGS.ODIS = GPTIMER_ODIS_C0CCP0_CCP_OUTPUT_LOW;
+			TIMA0->COUNTERREGS.CCACT_01[0] =  GPTIMER_CCACT_01_CDACT_CCP_LOW | GPTIMER_CCACT_01_LACT_CCP_HIGH;
 			//Configure polarity of the signal using the CCPOINV bit, 
 			//	and configure CCPIV to specify the CCP output state while disabled.
-			TIMA0->COUNTERREGS.OCTL_01[0] |= GPTIMER_OCTL_01_CCPOINV_NOINV | GPTIMER_OCTL_01_CCPIV_LOW;
+			//In TIMx.OCTL_xy[0/1], set CCPO = 0 to select the signal generator output
+			TIMA0->COUNTERREGS.OCTL_01[0] = GPTIMER_OCTL_01_CCPOINV_NOINV | GPTIMER_OCTL_01_CCPIV_LOW | GPTIMER_OCTL_01_CCPO_FUNCVAL;
+			//Enable the corresponding CCP output by setting ODIS.C0CCPn to 1 for the corresponding counter n.
+			TIMA0->COMMONREGS.ODIS = GPTIMER_ODIS_C0CCP0_CCP_OUTPUT_OCTL;
+			
 		break;
 		
 		
 		case 1:
 			//->IOMUX pin stuff
-			//Select PINCM29 for use as port I/O bc TIMA0 is PB12
+			//Select PINCM29 for use as port I/O bc TIMA0.1 is PB12
 			IOMUX->SECCFG.PINCM[28] |= (IOMUX_PINCM_PC_CONNECTED | IOMUX_PINCM29_PF_TIMA0_CCP1);
 			//->GPIO pin output stuff
 			//->CLK via GPIO stuff for output over DIO12 bc PB12
@@ -259,32 +268,29 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 			//->PWM Setup
 			//Set the TIMx.CC_xy[0/1] value to configure the duty cycle 
 			// 	-> index chooses channel and val at index determines capture or compare mode
-			TIMA0->COUNTERREGS.CC_01[1] = (uint32_t)(period*(1-percentDutyCycle)) ;//TIMA0 channel 0 set to compare
+			TIMA0->COUNTERREGS.CC_01[1] = (uint32_t) (period*(1-(percentDutyCycle)/100)) ;//TIMA0 channel 0 set to compare
 			//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 			//	-> index chooses channel and val at index determines capture or compare mode
-			//TIMA0->COUNTERREGS.CCCTL_01[pin] = 0;//TIMA0 channel 0 needs control for compare
-			//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 			TIMA0->COUNTERREGS.CCCTL_01[1] = GPTIMER_CCCTL_01_COC_COMPARE;
 			//configure CCP as output
 			TIMA0->COMMONREGS.CCPD = GPTIMER_CCPD_C0CCP0_OUTPUT;//should be = or |= ???
 			//In TIMx.CCACT_xy[0/1], set the CCP output action settings for compare events, zero events, load events, 
 			//		software force action, or fault events (TIMA only).
 			//	?? set this up for rising edge? like the compare ??
-			TIMA0->COUNTERREGS.CCACT_01[1] = GPTIMER_CCACT_01_LACT_CCP_HIGH | GPTIMER_CCACT_01_CDACT_CCP_LOW;
-			//In TIMx.OCTL_xy[0/1], set CCPO = 0 to select the signal generator output
-			TIMA0->COUNTERREGS.OCTL_01[1] = GPTIMER_OCTL_01_CCPO_FUNCVAL;
-			//Enable the corresponding CCP output by setting ODIS.C0CCPn to 1 for the corresponding counter n.
-			TIMA0->COMMONREGS.ODIS = GPTIMER_ODIS_C0CCP0_CCP_OUTPUT_LOW;
+			TIMA0->COUNTERREGS.CCACT_01[1] =  GPTIMER_CCACT_01_CDACT_CCP_LOW | GPTIMER_CCACT_01_LACT_CCP_HIGH;
 			//Configure polarity of the signal using the CCPOINV bit, 
 			//	and configure CCPIV to specify the CCP output state while disabled.
-			TIMA0->COUNTERREGS.OCTL_01[1] |= GPTIMER_OCTL_01_CCPOINV_NOINV | GPTIMER_OCTL_01_CCPIV_LOW;
+			//In TIMx.OCTL_xy[0/1], set CCPO = 0 to select the signal generator output
+			TIMA0->COUNTERREGS.OCTL_01[1] = GPTIMER_OCTL_01_CCPOINV_NOINV | GPTIMER_OCTL_01_CCPIV_LOW | GPTIMER_OCTL_01_CCPO_FUNCVAL;
+			//Enable the corresponding CCP output by setting ODIS.C0CCPn to 1 for the corresponding counter n.
+			TIMA0->COMMONREGS.ODIS = GPTIMER_ODIS_C0CCP0_CCP_OUTPUT_OCTL;
 		break;
 		
 		
 		case 2:
 			//->IOMUX pin stuff
-			//Select PINCM43 for use as port I/O bc TIMA0 is PB17
-			IOMUX->SECCFG.PINCM[28] |= (IOMUX_PINCM_PC_CONNECTED | IOMUX_PINCM43_PF_TIMA0_CCP2);
+			//Select PINCM43 for use as port I/O bc TIMA0.2 is PB17
+			IOMUX->SECCFG.PINCM[42] |= (IOMUX_PINCM_PC_CONNECTED | IOMUX_PINCM43_PF_TIMA0_CCP2);
 			//->GPIO pin output stuff
 			//->CLK via GPIO stuff for output over DIO17 bc PB17
 			GPIOB->DOESET31_0 |= (GPIO_DOE31_0_DIO17_ENABLE);
@@ -292,31 +298,28 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 			//->PWM Setup
 			//Set the TIMx.CC_xy[0/1] value to configure the duty cycle 
 			// 	-> index chooses channel and val at index determines capture or compare mode
-			TIMA0->COUNTERREGS.CC_23[0] = (uint32_t)(period*(1-percentDutyCycle)) ;//TIMA0 channel 0 set to compare
+			TIMA0->COUNTERREGS.CC_23[0] = (uint32_t) (period*(1-(percentDutyCycle)/100)) ;//TIMA0 channel 0 set to compare
 			//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 			//	-> index chooses channel and val at index determines capture or compare mode
-			//TIMA0->COUNTERREGS.CCCTL_01[pin] = 0;//TIMA0 channel 0 needs control for compare
-			//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 			TIMA0->COUNTERREGS.CCCTL_23[0] = GPTIMER_CCCTL_23_COC_COMPARE;
 			//configure CCP as output
 			TIMA0->COMMONREGS.CCPD = GPTIMER_CCPD_C0CCP0_OUTPUT;//should be = or |= ???
 			//In TIMx.CCACT_xy[0/1], set the CCP output action settings for compare events, zero events, load events, 
 			//		software force action, or fault events (TIMA only).
 			//	?? set this up for rising edge? like the compare ??
-			TIMA0->COUNTERREGS.CCACT_23[0] = GPTIMER_CCACT_23_LACT_CCP_HIGH | GPTIMER_CCACT_23_CDACT_CCP_LOW;
-			//In TIMx.OCTL_xy[0/1], set CCPO = 0 to select the signal generator output
-			TIMA0->COUNTERREGS.OCTL_23[0] = GPTIMER_OCTL_23_CCPO_FUNCVAL;
-			//Enable the corresponding CCP output by setting ODIS.C0CCPn to 1 for the corresponding counter n.
-			TIMA0->COMMONREGS.ODIS = GPTIMER_ODIS_C0CCP0_CCP_OUTPUT_LOW;
+			TIMA0->COUNTERREGS.CCACT_23[0] =  GPTIMER_CCACT_23_CDACT_CCP_LOW | GPTIMER_CCACT_23_LACT_CCP_HIGH;
 			//Configure polarity of the signal using the CCPOINV bit, 
 			//	and configure CCPIV to specify the CCP output state while disabled.
-			TIMA0->COUNTERREGS.OCTL_23[0] |= GPTIMER_OCTL_23_CCPOINV_NOINV | GPTIMER_OCTL_23_CCPIV_LOW;
+			//In TIMx.OCTL_xy[0/1], set CCPO = 0 to select the signal generator output
+			TIMA0->COUNTERREGS.OCTL_23[0] = GPTIMER_OCTL_23_CCPOINV_NOINV | GPTIMER_OCTL_23_CCPIV_LOW | GPTIMER_OCTL_23_CCPO_FUNCVAL;
+			//Enable the corresponding CCP output by setting ODIS.C0CCPn to 1 for the corresponding counter n.
+			TIMA0->COMMONREGS.ODIS = GPTIMER_ODIS_C0CCP0_CCP_OUTPUT_OCTL;
 		break;
 	
 		
 		case 3:
 			//->IOMUX pin stuff
-			//Select PINCM30 for use as port I/O bc TIMA0 is PB13
+			//Select PINCM30 for use as port I/O bc TIMA0.3 is PB13
 			IOMUX->SECCFG.PINCM[29] |= (IOMUX_PINCM_PC_CONNECTED | IOMUX_PINCM30_PF_TIMA0_CCP3);
 			//->GPIO pin output stuff
 			//->CLK via GPIO stuff for output over DIO13 bc PB13
@@ -325,37 +328,32 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 			//->PWM Setup
 			//Set the TIMx.CC_xy[0/1] value to configure the duty cycle 
 			// 	-> index chooses channel and val at index determines capture or compare mode
-			TIMA0->COUNTERREGS.CC_23[1] = (uint32_t)(period*(1-percentDutyCycle)) ;//TIMA0 channel 0 set to compare
+			TIMA0->COUNTERREGS.CC_23[1] = (uint32_t) (period*(1-(percentDutyCycle)/100)) ;//TIMA0 channel 0 set to compare
 			//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 			//	-> index chooses channel and val at index determines capture or compare mode
-			//TIMA0->COUNTERREGS.CCCTL_01[pin] = 0;//TIMA0 channel 0 needs control for compare
-			//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 			TIMA0->COUNTERREGS.CCCTL_23[1] = GPTIMER_CCCTL_23_COC_COMPARE;
 			//configure CCP as output
 			TIMA0->COMMONREGS.CCPD = GPTIMER_CCPD_C0CCP0_OUTPUT;//should be = or |= ???
 			//In TIMx.CCACT_xy[0/1], set the CCP output action settings for compare events, zero events, load events, 
 			//		software force action, or fault events (TIMA only).
 			//	?? set this up for rising edge? like the compare ??
-			TIMA0->COUNTERREGS.CCACT_23[1] = GPTIMER_CCACT_23_LACT_CCP_HIGH | GPTIMER_CCACT_23_CDACT_CCP_LOW;
-			//In TIMx.OCTL_xy[0/1], set CCPO = 0 to select the signal generator output
-			TIMA0->COUNTERREGS.OCTL_23[1] = GPTIMER_OCTL_23_CCPO_FUNCVAL;
-			//Enable the corresponding CCP output by setting ODIS.C0CCPn to 1 for the corresponding counter n.
-			TIMA0->COMMONREGS.ODIS = GPTIMER_ODIS_C0CCP0_CCP_OUTPUT_LOW;
+			TIMA0->COUNTERREGS.CCACT_23[1] =  GPTIMER_CCACT_23_CDACT_CCP_LOW | GPTIMER_CCACT_23_LACT_CCP_HIGH;
 			//Configure polarity of the signal using the CCPOINV bit, 
 			//	and configure CCPIV to specify the CCP output state while disabled.
-			TIMA0->COUNTERREGS.OCTL_23[1] |= GPTIMER_OCTL_23_CCPOINV_NOINV | GPTIMER_OCTL_23_CCPIV_LOW;
+			//In TIMx.OCTL_xy[0/1], set CCPO = 0 to select the signal generator output
+			TIMA0->COUNTERREGS.OCTL_23[1] = GPTIMER_OCTL_23_CCPOINV_NOINV | GPTIMER_OCTL_23_CCPIV_LOW | GPTIMER_OCTL_23_CCPO_FUNCVAL;
+			//Enable the corresponding CCP output by setting ODIS.C0CCPn to 1 for the corresponding counter n.
+			TIMA0->COMMONREGS.ODIS = GPTIMER_ODIS_C0CCP0_CCP_OUTPUT_OCTL;
 		break;
 	
 		default:
-			UART0_put((uint8_t*)"SHAWTY FIRE BURNING ON THE DANCEFLOOR OOWOAHoahOAH");
 		break;
 			
 	}
 	
 	
 	//Enable the counter by setting TIMx.CTRCTL.EN = 1.
-	//	??again, = or |= ??
-	TIMA0->COUNTERREGS.CTRCTL = GPTIMER_CTRCTL_EN_MASK;
+	TIMA0->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_EN_MASK;
 	
 	
 	//clk to 0
@@ -386,6 +384,17 @@ void TIMA1_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 		TIMA1->GPRCM.PWREN |= GPTIMER_PWREN_KEY_UNLOCK_W | GPTIMER_PWREN_ENABLE_ENABLE;
 	}//->we have enabled power
 	
+	
+	//check if GPIOB module has power enabled
+	if (!(GPIOB->GPRCM.PWREN & GPIO_PWREN_ENABLE_ENABLE)) {
+		//->if here, power was NOT enabled so reset board
+		//	set the key first to unlock write capability, assert the new key, and set the clear bit
+		GPIOB->GPRCM.RSTCTL |= GPIO_RSTCTL_KEY_UNLOCK_W | GPIO_RSTCTL_RESETASSERT_MASK;
+		//->now enable power
+		//set the key first to unlock write capability and enable power
+		GPIOB->GPRCM.PWREN |= GPIO_PWREN_KEY_UNLOCK_W | GPIO_PWREN_ENABLE_ENABLE;
+	}
+	
 	//->TIMERCLOCK (TIMCLK) Configuration
 	//DOUBLE CHECKKKKKKKKKKKKKKKKKKKKKKK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
@@ -404,45 +413,36 @@ void TIMA1_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 	//Enable the TIMCLK by setting CCLKCTL.CLKEN = 1
 	TIMA1->COMMONREGS.CCLKCTL = GPTIMER_CCLKCTL_CLKEN_ENABLED;
 	
-	
 	//->IOMUX pin stuff
-	//Select PINCM17 for use as port I/O bc TIMA1 is PB4
+	//Select PINCM17 for use as port I/O bc TIMA1.0 is PB4
 	IOMUX->SECCFG.PINCM[16] |= (IOMUX_PINCM_PC_CONNECTED | IOMUX_PINCM17_PF_TIMA1_CCP0);
 	//->GPIO pin output stuff
-	//->CLK via GPIO stuff for output over DIO8 bc PB4
+	//->CLK via GPIO stuff for output over DIO4 bc PB4
 	GPIOB->DOESET31_0 |= (GPIO_DOE31_0_DIO4_ENABLE);
 	
 	//->PWM Setup
 	//Set the TIMx.CC_xy[0/1] value to configure the duty cycle 
 	// 	-> index chooses channel and val at index determines capture or compare mode
-	TIMA1->COUNTERREGS.CC_01[0] = (uint32_t)(period*(1-percentDutyCycle)) ;//TIMA0 channel 0 set to compare
+	TIMA1->COUNTERREGS.CC_01[0] = (uint32_t) (period*(1-(percentDutyCycle)/100)) ;//TIMA0 channel 0 set to compare
 	//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 	//	-> index chooses channel and val at index determines capture or compare mode
-	//TIMA0->COUNTERREGS.CCCTL_01[pin] = 0;//TIMA0 channel 0 needs control for compare
-	//Set TIMx.CCCTL_xy[0/1].COC = 1 for compare mode
 	TIMA1->COUNTERREGS.CCCTL_01[0] = GPTIMER_CCCTL_01_COC_COMPARE;
 	//configure CCP as output
 	TIMA1->COMMONREGS.CCPD = GPTIMER_CCPD_C0CCP0_OUTPUT;//should be = or |= ???
 	//In TIMx.CCACT_xy[0/1], set the CCP output action settings for compare events, zero events, load events, 
 	//		software force action, or fault events (TIMA only).
 	//	?? set this up for rising edge? like the compare ??
-	TIMA1->COUNTERREGS.CCACT_01[0] = GPTIMER_CCACT_01_LACT_CCP_HIGH | GPTIMER_CCACT_01_CDACT_CCP_LOW;
-	//In TIMx.OCTL_xy[0/1], set CCPO = 0 to select the signal generator output
-	TIMA1->COUNTERREGS.OCTL_01[0] = GPTIMER_OCTL_01_CCPO_FUNCVAL;
-	//Enable the corresponding CCP output by setting ODIS.C0CCPn to 1 for the corresponding counter n.
-	TIMA1->COMMONREGS.ODIS = GPTIMER_ODIS_C0CCP0_CCP_OUTPUT_LOW;
+	TIMA1->COUNTERREGS.CCACT_01[0] =  GPTIMER_CCACT_01_CDACT_CCP_LOW | GPTIMER_CCACT_01_LACT_CCP_HIGH;
 	//Configure polarity of the signal using the CCPOINV bit, 
 	//	and configure CCPIV to specify the CCP output state while disabled.
-	TIMA1->COUNTERREGS.OCTL_01[0] |= GPTIMER_OCTL_01_CCPOINV_NOINV | GPTIMER_OCTL_01_CCPIV_LOW;
-	
+	//In TIMx.OCTL_xy[0/1], set CCPO = 0 to select the signal generator output
+	TIMA1->COUNTERREGS.OCTL_01[0] = GPTIMER_OCTL_01_CCPOINV_NOINV | GPTIMER_OCTL_01_CCPIV_LOW | GPTIMER_OCTL_01_CCPO_FUNCVAL;
+	//Enable the corresponding CCP output by setting ODIS.C0CCPn to 1 for the corresponding counter n.
+	TIMA1->COMMONREGS.ODIS = GPTIMER_ODIS_C0CCP0_CCP_OUTPUT_OCTL;
 	
 	//Enable the counter by setting TIMx.CTRCTL.EN = 1.
-	//	??again, = or |= ??
-	TIMA1->COUNTERREGS.CTRCTL = GPTIMER_CTRCTL_EN_MASK;
-	//clk to 0
-	//GPIOA->DOUTCLR31_0 |= GPIO_DOUTCLR31_0_DIO12_CLR;
-	//TIMG0 w 10kHz freq
-	//TIMG0_init(1600,1,GPTIMER_CLKDIV_RATIO_DIV_BY_1);
+	TIMA1->COUNTERREGS.CTRCTL |= GPTIMER_CTRCTL_EN_MASK;
+	
 }
 
 
@@ -454,8 +454,22 @@ void TIMA1_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 void TIMA0_PWM_DutyCycle(uint8_t pin, uint32_t period, double percentDutyCycle) {
 
 	// 	-> index chooses channel and val at index determines capture or compare mode
-	TIMA0->COUNTERREGS.CC_01[pin] = (uint32_t)(period*(1-percentDutyCycle)) ;//TIMA0 channel 0 set to compare
-
+	switch (pin) {
+		case 0:
+			TIMA0->COUNTERREGS.CC_01[0] = (uint32_t) (period*(1-(percentDutyCycle)/100)) ;
+		break;
+		case 1:
+			TIMA0->COUNTERREGS.CC_01[1] = (uint32_t) (period*(1-(percentDutyCycle)/100)) ;
+		break;
+		case 2:
+			TIMA0->COUNTERREGS.CC_23[0] = (uint32_t) (period*(1-(percentDutyCycle)/100)) ;
+		break;
+		case 3:
+			TIMA0->COUNTERREGS.CC_23[1] = (uint32_t) (period*(1-(percentDutyCycle)/100)) ;
+		break;
+		default:
+		break;
+	}
 
 }
 
@@ -468,7 +482,7 @@ void TIMA0_PWM_DutyCycle(uint8_t pin, uint32_t period, double percentDutyCycle) 
 void TIMA1_PWM_DutyCycle(uint8_t pin, uint32_t period, double percentDutyCycle) {
 
 	// 	-> index chooses channel and val at index determines capture or compare mode
-	TIMA1->COUNTERREGS.CC_01[0] = (uint32_t)(period*(1-percentDutyCycle)) ;//TIMA1 channel 0 set to compare
+	TIMA1->COUNTERREGS.CC_01[0] = (uint32_t) (period*(1-(percentDutyCycle)/100)) ;
 
 }
 
