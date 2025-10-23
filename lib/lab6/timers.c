@@ -183,7 +183,7 @@ void TIMG12_init(uint32_t period) {
  * @param[in] percenetDutyCycle - PWM duty cycle positive
  * @note Store period to be able to adjust duty cycle percentage later
 */
-void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double percentDutyCycle, uint32_t clk_div) {
+void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double percentDutyCycle) {
 
 	//->check if TIMA0 module has power enabled
 	if (!(TIMA0->GPRCM.PWREN & GPTIMER_PWREN_ENABLE_ENABLE)) {
@@ -211,7 +211,7 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
 	TIMA0->CLKSEL = GPTIMER_CLKSEL_BUSCLK_SEL_ENABLE;
 	//Optionally divide the TIMCLK using CLKDIV.RATIO
-	TIMA0->CLKDIV = clk_div;
+	TIMA0->CLKDIV = GPTIMER_CLKDIV_RATIO_DIV_BY_1;
 	//In TIMx instances with prescalers, optionally set a prescaler using CPS.PCNT
 	TIMA0->COMMONREGS.CPS = prescaler;
 	//disable counter
@@ -372,7 +372,7 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
  * @param[in] percenetDutyCycle - PWM duty cycle positive
  * @note Store period to be able to adjust duty cycle percentage later
 */
-void TIMA1_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double percentDutyCycle, uint32_t clk_div) {
+void TIMA1_PWM_init(uint32_t period, uint32_t prescaler, double percentDutyCycle) {
 
 //->check if TIMA0 module has power enabled
 	if (!(TIMA1->GPRCM.PWREN & GPTIMER_PWREN_ENABLE_ENABLE)) {
@@ -400,7 +400,7 @@ void TIMA1_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 	//select the TIMCLK clock source (BUSCLK, MFCLK, or LFCLK) using the CLKSEL register	
 	TIMA1->CLKSEL = GPTIMER_CLKSEL_BUSCLK_SEL_ENABLE;
 	//Optionally divide the TIMCLK using CLKDIV.RATIO
-	TIMA1->CLKDIV = clk_div;
+	TIMA1->CLKDIV = GPTIMER_CLKDIV_RATIO_DIV_BY_1;
 	//In TIMx instances with prescalers, optionally set a prescaler using CPS.PCNT
 	TIMA1->COMMONREGS.CPS = prescaler;
 	//disable counter
@@ -476,10 +476,10 @@ void TIMA0_PWM_DutyCycle(uint8_t pin, uint32_t period, double percentDutyCycle) 
 
 /**
  * @brief Change PWM duty cycle for all Timer A1 channels
- * @param[in] pin - Timer PWM output pin / channel
+ * @param[in] pin - Timer PWM output pin / channel --> not needed bc one channel on tima1
  * @param[in] percentDutyCycle - Duty cycle to change to
 */
-void TIMA1_PWM_DutyCycle(uint8_t pin, uint32_t period, double percentDutyCycle) {
+void TIMA1_PWM_DutyCycle(uint32_t period, double percentDutyCycle) {
 
 	// 	-> index chooses channel and val at index determines capture or compare mode
 	TIMA1->COUNTERREGS.CC_01[0] = (uint32_t) (period*(1-(percentDutyCycle)/100)) ;

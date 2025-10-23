@@ -42,18 +42,18 @@ void TIMG12_init(uint32_t period);
  * @param[in] percenetDutyCycle - PWM duty cycle positive
  * @note Store period to be able to adjust duty cycle percentage later
 */
-void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double percentDutyCycle, uint32_t clk_div);
+void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double percentDutyCycle);
 
 
 /**
  * @brief Timer A1 module PWM initialization
- * @param[in] pin - Timer PWM output pin / channel
+ * @param[in] pin - Timer PWM output pin / channel --> only one channel for tima1
  * @param[in] period - Timer load value
  * @param[in] prescaler - Timer prescale value
  * @param[in] percenetDutyCycle - PWM duty cycle positive
  * @note Store period to be able to adjust duty cycle percentage later
 */
-void TIMA1_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double percentDutyCycle, uint32_t clk_div);
+void TIMA1_PWM_init( uint32_t period, uint32_t prescaler, double percentDutyCycle);
 
 
 /**
@@ -66,10 +66,10 @@ void TIMA0_PWM_DutyCycle(uint8_t pin, uint32_t period, double percentDutyCycle);
 
 /**
  * @brief Change PWM duty cycle for all Timer A1 channels
- * @param[in] pin - Timer PWM output pin / channel
+ * @param[in] pin - Timer PWM output pin / channel --> not needed bc just one channel on tima1
  * @param[in] percentDutyCycle - Duty cycle to change to
 */
-void TIMA1_PWM_DutyCycle(uint8_t pin, uint32_t period, double percentDutyCycle);
+void TIMA1_PWM_DutyCycle(uint32_t period, double percentDutyCycle);
 
 
 #endif // _TIMERS_H_
