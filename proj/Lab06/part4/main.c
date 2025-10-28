@@ -17,7 +17,7 @@ note: only used in main.c
 */
 void delay() {
 	volatile long timer = 0;
-	while (timer < 400000){		// produces a delay of 10ms
+	while (timer < 40000){		// produces a delay of 10ms
 		timer+=1;
 	}
 }
@@ -34,8 +34,8 @@ int main() {
 	Camera_init();
 	
 	//servo motor center positioning
-	TIMA1_PWM_init(3200,199,7.5);
-	delay();
+//	TIMA1_PWM_init(3200,199,7.5);
+//	delay();
 	UART0_put("set to center\r\n");
 	while(1) {
 	
@@ -61,9 +61,9 @@ int main() {
 	}
 	
 	for(int i=0;i<=100; i++){
-		// channel 0 needs to be set to 0% for the whole time		
+		// need to increase the duty cycle for TIMA0 channel 0 from 0 to 100%
 		TIMA0_PWM_init(0,3200,0,0);
-		// need to increase the duty cycle for TIMA0 channel 1 from 0 to 100%
+		// channel 1 needs to be set to 0% for the whole time
 		TIMA0_PWM_init(1,3200,0,i);
 		UART0_printDec(i);
 		UART0_put("\r\n");
@@ -71,9 +71,9 @@ int main() {
 	}
 	
 	for(int i=100;i>=0; i--){
-		// channel 0 needs to be set to 0% for the whole time
+		// need to decrease the duty cycle for TIMA0 channel 0 from 100 to 0%
 		TIMA0_PWM_init(0,3200,0,0);
-		// need to decrease the duty cycle for TIMA0 channel 1 from 100 to 0%
+		// channel 1 needs to be set to 0% for the whole time
 		TIMA0_PWM_init(1,3200,0,i);
 		UART0_printDec(i);
 		UART0_put("\r\n");
@@ -82,6 +82,9 @@ int main() {
 	//->end of dc motor stuff
 		
 	//->start of servo motor stuff
+	//center to right
+	TIMA1_PWM_init(3200,199,7.5);
+		UART0_put("set to center\r\n");
 	//center to right
 	for(int i=76 ;i<=125 ; i++){
 		// need to increase the duty cycle for TIMA0 channel 0 from 0 to 100%
@@ -110,7 +113,6 @@ int main() {
 	}
 	UART0_put("came back to center\r\n");
 	//break statement for testing purposes - REMOVE ONCE APPROVED
-	break;
 	//->end of servo motor stuff
 
 	}
