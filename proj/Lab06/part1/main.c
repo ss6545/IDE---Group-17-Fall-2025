@@ -41,7 +41,7 @@ int main() {
 		// need to increase the duty cycle for TIMA0 channel 0 from 0 to 100%
 		TIMA0_PWM_init(0,3200,0,i);
 		// channel 1 needs to be set to 0% for the whole time
-		TIMA1_PWM_init(3200,0,0);
+		TIMA0_PWM_init(1,3200,0,0);
 		UART0_printDec(i);
 		UART0_put("\r\n");
 		delay();	// wait for 10ms after each increase in duty cycle
@@ -51,7 +51,7 @@ int main() {
 		// need to decrease the duty cycle for TIMA0 channel 0 from 100 to 0%
 		TIMA0_PWM_init(0,3200,0,i);
 		// channel 1 needs to be set to 0% for the whole time
-		TIMA1_PWM_init(3200,0,0);
+		TIMA0_PWM_init(1,3200,0,0);
 		UART0_printDec(i);
 		UART0_put("\r\n");
 		delay();	// wait for 10ms after each increase in duty cycle
@@ -61,7 +61,7 @@ int main() {
 		// need to increase the duty cycle for TIMA0 channel 0 from 0 to 100%
 		TIMA0_PWM_init(0,3200,0,0);
 		// channel 1 needs to be set to 0% for the whole time
-		TIMA1_PWM_init(3200,0,i);
+		TIMA0_PWM_init(1,3200,0,i);
 		UART0_printDec(i);
 		UART0_put("\r\n");
 		delay();	// wait for 10ms after each increase in duty cycle
@@ -71,7 +71,7 @@ int main() {
 		// need to decrease the duty cycle for TIMA0 channel 0 from 100 to 0%
 		TIMA0_PWM_init(0,3200,0,0);
 		// channel 1 needs to be set to 0% for the whole time
-		TIMA1_PWM_init(3200,0,i);
+		TIMA0_PWM_init(1,3200,0,i);
 		UART0_printDec(i);
 		UART0_put("\r\n");
 		delay();	// wait for 10ms after each increase in duty cycle
@@ -89,5 +89,6 @@ int main() {
 	return 0;
 
 }
+
 
 
