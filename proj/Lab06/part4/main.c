@@ -40,45 +40,48 @@ int main() {
 	while(1) {
 	
 	//->start of dc motor stuff
-	for(int i=0;i<=100; i++){
-		// need to increase the duty cycle for TIMA0 channel 0 from 0 to 100%
-		TIMA0_PWM_init(0,3200,0,i);
-		// channel 1 needs to be set to 0% for the whole time
-		TIMA0_PWM_init(1,3200,0,0);
-		UART0_printDec(i);
-		UART0_put("\r\n");
-		delay();	// wait for 10ms after each increase in duty cycle
-	}
+	// code for running TIMA0 at 30% duty cycle at 10kHz freq
+	TIMA0_PWM_init(0,3200,0,30);
+	TIMA0_PWM_init(1,3200,0,0);
+	// for(int i=0;i<=100; i++){
+	// 	// need to increase the duty cycle for TIMA0 channel 0 from 0 to 100%
+	// 	TIMA0_PWM_init(0,3200,0,i);
+	// 	// channel 1 needs to be set to 0% for the whole time
+	// 	TIMA0_PWM_init(1,3200,0,0);
+	// 	UART0_printDec(i);
+	// 	UART0_put("\r\n");
+	// 	delay();	// wait for 10ms after each increase in duty cycle
+	// }
 	
-	for(int i=100;i>=0; i--){
-		// need to decrease the duty cycle for TIMA0 channel 0 from 100 to 0%
-		TIMA0_PWM_init(0,3200,0,i);
-		// channel 1 needs to be set to 0% for the whole time
-		TIMA0_PWM_init(1,3200,0,0);
-		UART0_printDec(i);
-		UART0_put("\r\n");
-		delay();	// wait for 10ms after each increase in duty cycle
-	}
+	// for(int i=100;i>=0; i--){
+	// 	// need to decrease the duty cycle for TIMA0 channel 0 from 100 to 0%
+	// 	TIMA0_PWM_init(0,3200,0,i);
+	// 	// channel 1 needs to be set to 0% for the whole time
+	// 	TIMA0_PWM_init(1,3200,0,0);
+	// 	UART0_printDec(i);
+	// 	UART0_put("\r\n");
+	// 	delay();	// wait for 10ms after each increase in duty cycle
+	// }
 	
-	for(int i=0;i<=100; i++){
-		// need to increase the duty cycle for TIMA0 channel 0 from 0 to 100%
-		TIMA0_PWM_init(0,3200,0,0);
-		// channel 1 needs to be set to 0% for the whole time
-		TIMA0_PWM_init(1,3200,0,i);
-		UART0_printDec(i);
-		UART0_put("\r\n");
-		delay();	// wait for 10ms after each increase in duty cycle
-	}
+	// for(int i=0;i<=100; i++){
+	// 	// need to increase the duty cycle for TIMA0 channel 0 from 0 to 100%
+	// 	TIMA0_PWM_init(0,3200,0,0);
+	// 	// channel 1 needs to be set to 0% for the whole time
+	// 	TIMA0_PWM_init(1,3200,0,i);
+	// 	UART0_printDec(i);
+	// 	UART0_put("\r\n");
+	// 	delay();	// wait for 10ms after each increase in duty cycle
+	// }
 	
-	for(int i=100;i>=0; i--){
-		// need to decrease the duty cycle for TIMA0 channel 0 from 100 to 0%
-		TIMA0_PWM_init(0,3200,0,0);
-		// channel 1 needs to be set to 0% for the whole time
-		TIMA0_PWM_init(1,3200,0,i);
-		UART0_printDec(i);
-		UART0_put("\r\n");
-		delay();	// wait for 10ms after each increase in duty cycle
-	}
+	// for(int i=100;i>=0; i--){
+	// 	// need to decrease the duty cycle for TIMA0 channel 0 from 100 to 0%
+	// 	TIMA0_PWM_init(0,3200,0,0);
+	// 	// channel 1 needs to be set to 0% for the whole time
+	// 	TIMA0_PWM_init(1,3200,0,i);
+	// 	UART0_printDec(i);
+	// 	UART0_put("\r\n");
+	// 	delay();	// wait for 10ms after each increase in duty cycle
+	// }
 	//->end of dc motor stuff
 		
 	//->start of servo motor stuff
@@ -120,3 +123,4 @@ int main() {
 	return 0;
 
 }
+
