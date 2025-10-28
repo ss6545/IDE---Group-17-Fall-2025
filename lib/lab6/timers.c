@@ -242,7 +242,7 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 			//	-> index chooses channel and val at index determines capture or compare mode
 			TIMA0->COUNTERREGS.CCCTL_01[0] = GPTIMER_CCCTL_01_COC_COMPARE;
 			//configure CCP as output
-			TIMA0->COMMONREGS.CCPD = GPTIMER_CCPD_C0CCP0_OUTPUT;//should be = or |= ???
+			TIMA0->COMMONREGS.CCPD |= GPTIMER_CCPD_C0CCP0_OUTPUT;//should be = or |= ???
 			//In TIMx.CCACT_xy[0/1], set the CCP output action settings for compare events, zero events, load events, 
 			//		software force action, or fault events (TIMA only).
 			//	?? set this up for rising edge? like the compare ??
@@ -273,7 +273,7 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 			//	-> index chooses channel and val at index determines capture or compare mode
 			TIMA0->COUNTERREGS.CCCTL_01[1] = GPTIMER_CCCTL_01_COC_COMPARE;
 			//configure CCP as output
-			TIMA0->COMMONREGS.CCPD = GPTIMER_CCPD_C0CCP0_OUTPUT;//should be = or |= ???
+			TIMA0->COMMONREGS.CCPD |= GPTIMER_CCPD_C0CCP1_OUTPUT;//should be = or |= ???
 			//In TIMx.CCACT_xy[0/1], set the CCP output action settings for compare events, zero events, load events, 
 			//		software force action, or fault events (TIMA only).
 			//	?? set this up for rising edge? like the compare ??
@@ -303,7 +303,7 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 			//	-> index chooses channel and val at index determines capture or compare mode
 			TIMA0->COUNTERREGS.CCCTL_23[0] = GPTIMER_CCCTL_23_COC_COMPARE;
 			//configure CCP as output
-			TIMA0->COMMONREGS.CCPD = GPTIMER_CCPD_C0CCP0_OUTPUT;//should be = or |= ???
+			TIMA0->COMMONREGS.CCPD |= GPTIMER_CCPD_C0CCP2_OUTPUT;//should be = or |= ???
 			//In TIMx.CCACT_xy[0/1], set the CCP output action settings for compare events, zero events, load events, 
 			//		software force action, or fault events (TIMA only).
 			//	?? set this up for rising edge? like the compare ??
@@ -333,7 +333,7 @@ void TIMA0_PWM_init(uint8_t pin, uint32_t period, uint32_t prescaler, double per
 			//	-> index chooses channel and val at index determines capture or compare mode
 			TIMA0->COUNTERREGS.CCCTL_23[1] = GPTIMER_CCCTL_23_COC_COMPARE;
 			//configure CCP as output
-			TIMA0->COMMONREGS.CCPD = GPTIMER_CCPD_C0CCP0_OUTPUT;//should be = or |= ???
+			TIMA0->COMMONREGS.CCPD |= GPTIMER_CCPD_C0CCP3_OUTPUT;//should be = or |= ???
 			//In TIMx.CCACT_xy[0/1], set the CCP output action settings for compare events, zero events, load events, 
 			//		software force action, or fault events (TIMA only).
 			//	?? set this up for rising edge? like the compare ??
@@ -485,5 +485,4 @@ void TIMA1_PWM_DutyCycle(uint32_t period, double percentDutyCycle) {
 	TIMA1->COUNTERREGS.CC_01[0] = (uint32_t) (period*(1-(percentDutyCycle)/100)) ;
 
 }
-
 
