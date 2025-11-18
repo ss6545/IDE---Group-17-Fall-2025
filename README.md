@@ -133,9 +133,9 @@ on the car, it should interact with these specific pins.
 | TIMA1  | Channel 0    | PB4      | 17     |
 | TIMG0  | Channel 0    | PA12     | 34     |
 | ADC0   | Channel 0    | PA27     | 60     |
-| GPIOB  | Left DC EN   | PB19     | 3      |
-| GPIOA  | Right DC EN  | PA22     | 45     |
-| GPIOA  | Camera SI    | PA28     | 47     |
+| GPIOB  | Left DC EN   | PB19     | 45     |
+| GPIOA  | Right DC EN  | PA22     | 47     |
+| GPIOA  | Camera SI    | PA28     | 3      |
 
 > ⚠️ Note: SW1 is a physical header on the board that must be moved to connect PA9 for
 > UART1 functionality to work as expected.
