@@ -1,7 +1,7 @@
 /******************************************************************************
- * @file    : main.c - for demo 1
- * @brief   : main file for the demo 1 of the car
- * @details : using only weighted average (or COM)
+ * @file    : main.c - for demo 2
+ * @brief   : main file for the demo 2 of the car
+ * @details : using only weighted average (or COM), go through a figure 8 track
  * 
  * @author	: me
  * @date 	: today
@@ -275,4 +275,5 @@ double mapRange(double n, double start1, double stop1, double start2, double sto
 //            0.2f * b3 +
 //            0.2f * b4);
 //}
+
 
