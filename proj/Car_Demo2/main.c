@@ -1,7 +1,11 @@
 /******************************************************************************
-Akshay Narang 
-IDE Lab05 - 
-******************************************************************************/
+ * @file    : main.c - for demo 1
+ * @brief   : main file for the demo 1 of the car
+ * @details : using only weighted average (or COM)
+ * 
+ * @author	: me
+ * @date 	: today
+ ******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -264,10 +268,11 @@ double mapRange(double n, double start1, double stop1, double start2, double sto
 //    float b4 = buffer[(bi + 0) % 5];  // oldest
 
 //    // Example weights (must sum to 1.0):
-//    // 0.40, 0.25, 0.20, 0.10, 0.05  — tune as needed
+//    // 0.40, 0.25, 0.20, 0.10, 0.05  â€” tune as needed
 //    return (0.2f * b0 +
 //            0.2f * b1 +
 //            0.2f * b2 +
 //            0.2f * b3 +
 //            0.2f * b4);
 //}
+
